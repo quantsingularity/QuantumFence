@@ -2,7 +2,7 @@
 QuantumFence - Alert Management Routes
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from api.routes.auth import User, get_current_user
@@ -62,7 +62,7 @@ async def get_alert_stats(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    since_24h = datetime.utcnow() - timedelta(hours=24)
+    since_24h = datetime.now(timezone.utc) - timedelta(hours=24)
     by_type = {
         at.value: db.query(Alert).filter(Alert.alert_type == at).count()
         for at in AlertType
@@ -107,7 +107,9 @@ async def list_alerts(
     if camera_id:
         q = q.filter(Alert.camera_id == camera_id)
     if hours:
-        q = q.filter(Alert.created_at >= datetime.utcnow() - timedelta(hours=hours))
+        q = q.filter(
+            Alert.created_at >= datetime.now(timezone.utc) - timedelta(hours=hours)
+        )
     return q.order_by(Alert.created_at.desc()).offset(skip).limit(limit).all()
 
 
@@ -137,9 +139,9 @@ async def update_alert(
         a.status = update.status
         if update.status == AlertStatus.ACKNOWLEDGED:
             a.acknowledged_by = current_user.id
-            a.acknowledged_at = datetime.utcnow()
+            a.acknowledged_at = datetime.now(timezone.utc)
         elif update.status == AlertStatus.RESOLVED:
-            a.resolved_at = datetime.utcnow()
+            a.resolved_at = datetime.now(timezone.utc)
     if update.notes is not None:
         a.notes = update.notes
     db.commit()
@@ -158,7 +160,7 @@ async def acknowledge_alert(
         raise HTTPException(404, "Alert not found")
     a.status = AlertStatus.ACKNOWLEDGED
     a.acknowledged_by = current_user.id
-    a.acknowledged_at = datetime.utcnow()
+    a.acknowledged_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(a)
     return a
@@ -174,7 +176,7 @@ async def resolve_alert(
     if not a:
         raise HTTPException(404, "Alert not found")
     a.status = AlertStatus.RESOLVED
-    a.resolved_at = datetime.utcnow()
+    a.resolved_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(a)
     return a

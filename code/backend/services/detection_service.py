@@ -5,7 +5,7 @@ Orchestrates real-time video processing and AI-powered threat detection.
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -65,7 +65,7 @@ class CameraProcessor:
         h, w = 720, 1280
         frame = np.zeros((h, w, 3), dtype=np.uint8)
         frame[:] = (18, 22, 30)
-        ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
         cv2.putText(
             frame,
             f"CAM {self.camera_id:02d}  —  {ts}",
@@ -212,7 +212,7 @@ class DetectionService:
 
         person_vehicle_results: list = []
         drone_results: list = []
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(timezone.utc)
 
         try:
             if config.get("detect_persons", True):

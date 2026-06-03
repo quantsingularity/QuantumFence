@@ -5,7 +5,7 @@ trajectory analysis, and authorised-zone logic.
 """
 
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import numpy as np
 import pytest
@@ -105,7 +105,7 @@ class TestDroneTrack:
 
     def test_duration_seconds_positive(self):
         t = DroneTrack(track_id=1)
-        t.first_seen = datetime.utcnow() - timedelta(seconds=5)
+        t.first_seen = datetime.now(timezone.utc) - timedelta(seconds=5)
         t.positions.append((0, 0, 10, 10))
         d = t.to_dict()
         # Use 4.9 to avoid floating-point timing edge cases
@@ -169,7 +169,7 @@ class TestDroneDetectorTracking:
 
         # Force stale by backdating last_seen
         for track in detector.active_tracks.values():
-            track.last_seen = datetime.utcnow() - timedelta(seconds=60)
+            track.last_seen = datetime.now(timezone.utc) - timedelta(seconds=60)
 
         # Next frame with no detections → stale track pruned
         detector.process_frame(frame_1080p, [])
@@ -224,7 +224,7 @@ class TestThreatScoring:
     def test_long_duration_increases_score(self, detector):
         t_new = DroneTrack(track_id=1)
         t_old = DroneTrack(track_id=2)
-        t_old.first_seen = datetime.utcnow() - timedelta(seconds=90)
+        t_old.first_seen = datetime.now(timezone.utc) - timedelta(seconds=90)
         for t in (t_new, t_old):
             t.positions.append((500, 200, 25, 25))
         s_new = detector._calculate_threat_score(t_new, (1080, 1920, 3))
@@ -233,7 +233,7 @@ class TestThreatScoring:
 
     def test_threat_score_clamped_between_0_and_1(self, detector):
         t = DroneTrack(track_id=1)
-        t.first_seen = datetime.utcnow() - timedelta(seconds=200)
+        t.first_seen = datetime.now(timezone.utc) - timedelta(seconds=200)
         for size in [20, 30, 40, 50, 60]:
             t.positions.append((960, 540, size, size))
         score = detector._calculate_threat_score(t, (1080, 1920, 3))

@@ -5,7 +5,7 @@ alert + drone detection DB persistence, and snapshot saving.
 All camera I/O is mocked — no real streams or GPU needed.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -331,7 +331,7 @@ class TestAlertCreation:
                 svc_with_db, "_save_snapshot", new_callable=AsyncMock, return_value=None
             ):
                 await svc_with_db._create_alert(
-                    cam.id, detections, blank_frame, datetime.utcnow()
+                    cam.id, detections, blank_frame, datetime.now(timezone.utc)
                 )
 
         alerts = db_session.query(Alert).filter(Alert.camera_id == cam.id).all()
@@ -358,7 +358,7 @@ class TestAlertCreation:
                 svc_with_db, "_save_snapshot", new_callable=AsyncMock, return_value=None
             ):
                 await svc_with_db._create_alert(
-                    cam.id, detections, blank_frame, datetime.utcnow()
+                    cam.id, detections, blank_frame, datetime.now(timezone.utc)
                 )
             mock_ws.broadcast_alert.assert_called_once()
 
@@ -370,7 +370,9 @@ class TestAlertCreation:
 
         cam = make_camera()
         with patch("services.detection_service.manager"):
-            await svc_with_db._create_alert(cam.id, [], blank_frame, datetime.utcnow())
+            await svc_with_db._create_alert(
+                cam.id, [], blank_frame, datetime.now(timezone.utc)
+            )
         count = db_session.query(Alert).filter(Alert.camera_id == cam.id).count()
         assert count == 0
 
@@ -405,7 +407,7 @@ class TestAlertCreation:
                 svc_with_db, "_save_snapshot", new_callable=AsyncMock, return_value=None
             ):
                 await svc_with_db._create_alert(
-                    cam.id, detections, blank_frame, datetime.utcnow()
+                    cam.id, detections, blank_frame, datetime.now(timezone.utc)
                 )
 
         alert = db_session.query(Alert).filter(Alert.camera_id == cam.id).first()
@@ -464,7 +466,7 @@ class TestSnapshotSaving:
 
         frame = np.zeros((100, 100, 3), dtype=np.uint8)
         # imwrite fails silently → returns None
-        path = await svc._save_snapshot(1, frame, "person", datetime.utcnow())
+        path = await svc._save_snapshot(1, frame, "person", datetime.now(timezone.utc))
         # Either None or path that doesn't exist
         if path is not None:
             assert not Path(path).exists()
@@ -529,4 +531,4 @@ class TestDetectionServiceDBHelpers:
         svc.db_session_factory = None
         # Should not raise
         svc._set_camera_status(1, "online")
-        svc._touch_camera(1, datetime.utcnow())
+        svc._touch_camera(1, datetime.now(timezone.utc))

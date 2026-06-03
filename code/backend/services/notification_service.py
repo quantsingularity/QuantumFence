@@ -4,7 +4,7 @@ QuantumFence - Notification Service
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -163,7 +163,7 @@ body{{font-family:'Segoe UI',sans-serif;background:#0a0a1a;color:#e0e0e0;margin:
     <div class="value">{camera_name}</div></div>
   {loc_html}
   <div class="field"><div class="label">Timestamp</div>
-    <div class="value">{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}</div></div>
+    <div class="value">{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</div></div>
   <div class="field"><div class="label">Description</div>
     <div class="value">{description}</div></div>
   {ai_html}{act_html}
@@ -225,7 +225,7 @@ body{{font-family:'Segoe UI',sans-serif;background:#0a0a1a;color:#e0e0e0;margin:
             "camera": camera_name,
             "location": location,
             "ai_summary": ai_summary,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         async with aiohttp.ClientSession() as session:

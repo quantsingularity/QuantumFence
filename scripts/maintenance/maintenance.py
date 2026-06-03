@@ -18,7 +18,7 @@ def cleanup_snapshots(days: int = 30):
     snapshots_dir = Path("code/backend/snapshots")
     if not snapshots_dir.exists():
         return
-    cutoff = datetime.utcnow() - timedelta(days=days)
+    cutoff = datetime.now(datetime.UTC) - timedelta(days=days)
     removed = 0
     for f in snapshots_dir.glob("*.jpg"):
         mtime = datetime.fromtimestamp(f.stat().st_mtime)
@@ -35,7 +35,7 @@ def cleanup_old_alerts(days: int = 90):
         from database.models import Alert, AlertStatus
 
         db = SessionLocal()
-        cutoff = datetime.utcnow() - timedelta(days=days)
+        cutoff = datetime.now(datetime.UTC) - timedelta(days=days)
         old = (
             db.query(Alert)
             .filter(Alert.status == AlertStatus.RESOLVED, Alert.resolved_at < cutoff)
@@ -72,7 +72,7 @@ def check_system_health():
 
 def main():
     print(
-        f"\n[{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}] QuantumFence Maintenance\n"
+        f"\n[{datetime.now(datetime.UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}] QuantumFence Maintenance\n"
     )
     cleanup_snapshots(days=30)
     cleanup_old_alerts(days=90)

@@ -2,7 +2,7 @@
 QuantumFence - Analytics Routes
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from api.routes.auth import User, get_current_user
 from database.database import get_db
@@ -26,7 +26,7 @@ async def get_overview(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     last_24h = now - timedelta(hours=24)
 
     total_cameras = db.query(Camera).count()
@@ -80,7 +80,7 @@ async def detections_timeline(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    since = datetime.utcnow() - timedelta(days=days)
+    since = datetime.now(timezone.utc) - timedelta(days=days)
     results = []
     for i in range(days):
         day = since + timedelta(days=i)
@@ -103,7 +103,7 @@ async def alerts_by_type(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    since = datetime.utcnow() - timedelta(days=days)
+    since = datetime.now(timezone.utc) - timedelta(days=days)
     return [
         {
             "type": at.value,

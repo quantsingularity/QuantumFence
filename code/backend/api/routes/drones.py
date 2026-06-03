@@ -2,7 +2,7 @@
 QuantumFence - Drone Detection Routes
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from api.routes.auth import User, get_current_user
@@ -42,7 +42,7 @@ async def list_drone_detections(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    since = datetime.utcnow() - timedelta(hours=hours)
+    since = datetime.now(timezone.utc) - timedelta(hours=hours)
     q = db.query(DroneDetection).filter(DroneDetection.timestamp >= since)
     if camera_id:
         q = q.filter(DroneDetection.camera_id == camera_id)
@@ -55,7 +55,7 @@ async def get_active_drones(
     current_user: User = Depends(get_current_user),
 ):
     """Drones detected in the last 5 minutes."""
-    since = datetime.utcnow() - timedelta(minutes=5)
+    since = datetime.now(timezone.utc) - timedelta(minutes=5)
     drones = db.query(DroneDetection).filter(DroneDetection.timestamp >= since).all()
     # FIX-20: use model_validate for serialization
     return {
@@ -74,7 +74,9 @@ async def drone_stats(
     total = db.query(DroneDetection).count()
     last_24h = (
         db.query(DroneDetection)
-        .filter(DroneDetection.timestamp >= datetime.utcnow() - timedelta(hours=24))
+        .filter(
+            DroneDetection.timestamp >= datetime.now(timezone.utc) - timedelta(hours=24)
+        )
         .count()
     )
     authorized = (

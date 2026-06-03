@@ -7,7 +7,7 @@ import logging
 import math
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
@@ -23,8 +23,8 @@ class DroneTrack:
     # Each position: (center_x, center_y, bbox_width, bbox_height) in pixels
     positions: deque = field(default_factory=lambda: deque(maxlen=100))
     confidences: deque = field(default_factory=lambda: deque(maxlen=100))
-    first_seen: datetime = field(default_factory=datetime.utcnow)
-    last_seen: datetime = field(default_factory=datetime.utcnow)
+    first_seen: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    last_seen: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     drone_type: str = "unknown"
     is_authorized: bool = False
     threat_score: float = 0.0
@@ -109,7 +109,7 @@ class DroneDetector:
         frame: np.ndarray,
         raw_detections: List[Dict],
     ) -> List[DroneTrack]:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         valid_dets = [
             d for d in raw_detections if d["confidence"] >= self.confidence_threshold
         ]

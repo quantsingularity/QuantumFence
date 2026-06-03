@@ -4,7 +4,7 @@ QuantumFence - Perimeter Intelligence Service
 
 import logging
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Tuple
 
 logger = logging.getLogger("quantumfence.perimeter")
@@ -69,7 +69,7 @@ class PerimeterService:
                             "camera_id": camera_id,
                             "lat": detection_lat,
                             "lng": detection_lng,
-                            "timestamp": datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
                         }
                     )
                     self._set_cooldown(key)
@@ -83,7 +83,7 @@ class PerimeterService:
         lng: float,
         loiter_threshold_seconds: float = 60.0,
     ) -> bool:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         key = f"loiter_{track_id}"
 
         if key not in self._loitering_tracker:
@@ -241,9 +241,11 @@ class PerimeterService:
 
     def _is_in_cooldown(self, key: str) -> bool:
         if key in self._breach_cooldowns:
-            elapsed = (datetime.utcnow() - self._breach_cooldowns[key]).total_seconds()
+            elapsed = (
+                datetime.now(timezone.utc) - self._breach_cooldowns[key]
+            ).total_seconds()
             return elapsed < self._cooldown_seconds
         return False
 
     def _set_cooldown(self, key: str):
-        self._breach_cooldowns[key] = datetime.utcnow()
+        self._breach_cooldowns[key] = datetime.now(timezone.utc)

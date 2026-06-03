@@ -5,7 +5,7 @@ approach vector analysis, alert cooldowns, and the Haversine formula.
 """
 
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from services.perimeter_service import PerimeterService
@@ -207,7 +207,7 @@ class TestLoiteringDetection:
             svc.detect_loitering(track_id, 33.68, 73.04, loiter_threshold_seconds=2.0)
         # Force the first recorded timestamp to be 3 seconds old
         tracker_key = f"loiter_{track_id}"
-        svc._loitering_tracker[tracker_key][0] = datetime.utcnow() - timedelta(
+        svc._loitering_tracker[tracker_key][0] = datetime.now(timezone.utc) - timedelta(
             seconds=3
         )
         result = svc.detect_loitering(

@@ -2,7 +2,7 @@
 Tests for /api/alerts, /api/drones, /api/analytics, /api/geofences routes.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from database.models import AlertSeverity, AlertStatus, ThreatLevel
@@ -69,7 +69,7 @@ class TestListAlerts:
         """Alerts older than the hours window must be excluded."""
         old_alert = make_alert(title="Old")
         # Back-date it
-        old_alert.created_at = datetime.utcnow() - timedelta(hours=50)
+        old_alert.created_at = datetime.now(timezone.utc) - timedelta(hours=50)
         db_session.commit()
         make_alert(title="Recent")
 

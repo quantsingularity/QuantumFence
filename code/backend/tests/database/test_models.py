@@ -3,7 +3,7 @@ Tests for SQLAlchemy ORM models.
 Covers field defaults, constraints, relationships, and enum correctness.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 from api.routes.auth import hash_password
@@ -189,7 +189,7 @@ class TestAlertModel:
 
         alert.status = AlertStatus.ACKNOWLEDGED
         alert.acknowledged_by = user.id
-        alert.acknowledged_at = datetime.utcnow()
+        alert.acknowledged_at = datetime.now(timezone.utc)
         db_session.commit()
         db_session.refresh(alert)
 
@@ -199,7 +199,7 @@ class TestAlertModel:
     def test_alert_resolve_sets_timestamp(self, db_session, make_alert):
         alert = make_alert()
         alert.status = AlertStatus.RESOLVED
-        alert.resolved_at = datetime.utcnow()
+        alert.resolved_at = datetime.now(timezone.utc)
         db_session.commit()
         db_session.refresh(alert)
         assert alert.resolved_at is not None

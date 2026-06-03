@@ -5,7 +5,7 @@ QuantumFence - Google Earth & Maps Integration
 import logging
 import math
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 from config.settings import settings
@@ -90,7 +90,7 @@ class GoogleEarthIntegration:
         geofences: List[Dict],
         threats: Optional[List[ThreatMarker]] = None,
     ) -> str:
-        ts = datetime.utcnow().strftime("%Y-%m-%d")
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         parts = [
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<kml xmlns="http://www.opengis.net/kml/2.2">',

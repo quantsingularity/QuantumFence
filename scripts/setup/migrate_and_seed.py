@@ -209,7 +209,7 @@ def seed_cameras(db):
         if not db.query(Camera).filter(Camera.name == c["name"]).first():
             if geofence:
                 c["geofence_id"] = geofence.id
-            c["last_seen"] = datetime.utcnow()
+            c["last_seen"] = datetime.now(datetime.UTC)
             camera = Camera(**c)
             db.add(camera)
             print(f"  + Camera: {c['name']}")

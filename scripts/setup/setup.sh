@@ -99,7 +99,7 @@ ENVEOF
 
 setup_frontend() {
     log "Setting up frontend..."
-    cd "$QF_ROOT/web-frontend"
+    cd "$QF_ROOT/frontend"
 
     npm install --silent
     success "Frontend dependencies installed"

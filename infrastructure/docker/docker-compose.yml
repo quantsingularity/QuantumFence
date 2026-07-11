@@ -37,7 +37,7 @@ services:
   # ─── Frontend ─────────────────────────────────────────────────────────────────
   frontend:
     build:
-      context: ../../web-frontend
+      context: ../../frontend
       dockerfile: ../infrastructure/docker/Dockerfile.frontend
       args:
         - VITE_API_URL=/api

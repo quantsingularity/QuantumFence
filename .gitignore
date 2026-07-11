@@ -36,8 +36,8 @@ code/backend/logs/
 
 # Node
 node_modules/
-web-frontend/dist/
-web-frontend/.vite/
+frontend/dist/
+frontend/.vite/
 
 # Docker
 infrastructure/docker/.env

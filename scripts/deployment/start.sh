@@ -51,7 +51,7 @@ success "Backend ready → http://localhost:8000"
 
 # ── Frontend ──────────────────────────────────────────────────────────────
 log "Starting frontend..."
-cd "$QF_ROOT/web-frontend"
+cd "$QF_ROOT/frontend"
 [[ -d node_modules ]] || npm install --silent
 npm run dev 2>&1 | sed "s/^/${CYAN}[FRONTEND]${NC} /" &
 FRONTEND_PID=$!

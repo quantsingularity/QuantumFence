@@ -42,7 +42,7 @@ QuantumFence/
 │   │   └── drone_detector.py     # Drone tracking & trajectory analysis
 │   └── integrations/
 │       └── google_earth.py       # Google Maps/Earth KML/API
-├── web-frontend/                 # React + Vite SPA
+├── frontend/                 # React + Vite SPA
 │   ├── src/
 │   │   ├── pages/
 │   │   │   ├── Dashboard.jsx     # Live command center

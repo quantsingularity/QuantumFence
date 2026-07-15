@@ -6,21 +6,36 @@ import {
   Navigate,
 } from "react-router-dom";
 import Layout from "./components/Layout";
+import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Cameras from "./pages/Cameras";
 import Alerts from "./pages/Alerts";
 import DroneWatch from "./pages/DroneWatch";
 import MapView from "./pages/MapView";
+import Geofences from "./pages/Geofences";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
 import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import NotFound from "./pages/NotFound";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { WebSocketProvider } from "./context/WebSocketContext";
 
+// Guards the authenticated app shell — bounces signed-out visitors to /login.
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
   if (loading) return <SplashScreen />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
+  return children;
+}
+
+// Keeps signed-in users off the auth forms — sends them straight to the
+// dashboard instead of showing Login/Sign Up again.
+function PublicOnlyRoute({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return <SplashScreen />;
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
   return children;
 }
 
@@ -103,20 +118,44 @@ export default function App() {
         <Router>
           <div className="scan-overlay" />
           <Routes>
-            <Route path="/login" element={<Login />} />
+            {/* Public marketing homepage — always the entry point */}
+            <Route path="/" element={<Home />} />
+
+            {/* Auth forms — redirect away if already signed in */}
+            <Route
+              path="/login"
+              element={
+                <PublicOnlyRoute>
+                  <Login />
+                </PublicOnlyRoute>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <PublicOnlyRoute>
+                  <SignUp />
+                </PublicOnlyRoute>
+              }
+            />
+
+            {/* Authenticated app shell */}
             <Route
               path="/*"
               element={
                 <ProtectedRoute>
                   <Layout>
                     <Routes>
-                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/cameras" element={<Cameras />} />
                       <Route path="/alerts" element={<Alerts />} />
                       <Route path="/drones" element={<DroneWatch />} />
                       <Route path="/map" element={<MapView />} />
+                      <Route path="/geofences" element={<Geofences />} />
                       <Route path="/analytics" element={<Analytics />} />
                       <Route path="/settings" element={<Settings />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Layout>
                 </ProtectedRoute>

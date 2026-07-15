@@ -2,22 +2,66 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-export default function Login() {
-  const [form, setForm] = useState({ username: "", password: "" });
+const initialForm = {
+  username: "",
+  email: "",
+  full_name: "",
+  password: "",
+  confirmPassword: "",
+};
+
+function validate(form) {
+  if (form.username.trim().length < 3) {
+    return "Username must be at least 3 characters";
+  }
+  if (!/^[a-zA-Z0-9_.-]+$/.test(form.username.trim())) {
+    return "Username may only contain letters, numbers, dots, dashes, underscores";
+  }
+  if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+    return "Enter a valid email address";
+  }
+  if (form.password.length < 8) {
+    return "Password must be at least 8 characters";
+  }
+  if (form.password !== form.confirmPassword) {
+    return "Passwords do not match";
+  }
+  return "";
+}
+
+export default function SignUp() {
+  const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
+
+  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    const validationError = validate(form);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setLoading(true);
     try {
-      await login(form.username, form.password);
+      await register({
+        username: form.username.trim(),
+        email: form.email.trim(),
+        password: form.password,
+        full_name: form.full_name.trim() || undefined,
+      });
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.detail || "Invalid credentials");
+      setError(
+        err.response?.data?.detail ||
+          "Could not create account — please try again",
+      );
     } finally {
       setLoading(false);
     }
@@ -33,6 +77,7 @@ export default function Login() {
         justifyContent: "center",
         position: "relative",
         overflow: "hidden",
+        padding: "40px 0",
       }}
       className="qf-grid-bg"
     >
@@ -44,7 +89,7 @@ export default function Login() {
           height: 600,
           borderRadius: "50%",
           top: -200,
-          left: -200,
+          right: -200,
           background:
             "radial-gradient(circle, var(--qf-cyan-glow) 0%, transparent 70%)",
           pointerEvents: "none",
@@ -57,7 +102,7 @@ export default function Login() {
           height: 400,
           borderRadius: "50%",
           bottom: -100,
-          right: -100,
+          left: -100,
           background: "radial-gradient(circle, #00ff8811 0%, transparent 70%)",
           pointerEvents: "none",
         }}
@@ -66,7 +111,7 @@ export default function Login() {
       <div
         style={{
           width: "100%",
-          maxWidth: 420,
+          maxWidth: 460,
           padding: 24,
           position: "relative",
         }}
@@ -78,7 +123,7 @@ export default function Login() {
             textDecoration: "none",
             display: "block",
             textAlign: "center",
-            marginBottom: 40,
+            marginBottom: 32,
           }}
         >
           <div
@@ -86,14 +131,14 @@ export default function Login() {
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              width: 72,
-              height: 72,
-              borderRadius: 20,
+              width: 64,
+              height: 64,
+              borderRadius: 18,
               background:
                 "linear-gradient(135deg, var(--qf-cyan-dim), var(--qf-bg-surface))",
               border: "1px solid var(--qf-cyan)",
-              fontSize: 32,
-              marginBottom: 20,
+              fontSize: 28,
+              marginBottom: 16,
               boxShadow: "0 0 40px var(--qf-cyan-dim)",
             }}
           >
@@ -102,29 +147,18 @@ export default function Login() {
           <div
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: 28,
+              fontSize: 24,
               fontWeight: 900,
               color: "var(--qf-cyan)",
-              letterSpacing: 6,
+              letterSpacing: 5,
               textShadow: "0 0 30px var(--qf-cyan)",
-              marginBottom: 8,
             }}
           >
             QUANTUMFENCE
           </div>
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              color: "var(--qf-text-muted)",
-              letterSpacing: 3,
-            }}
-          >
-            PERIMETER DEFENSE AI SYSTEM
-          </div>
         </Link>
 
-        {/* Login Card */}
+        {/* Sign Up Card */}
         <div
           className="qf-card"
           style={{
@@ -133,70 +167,111 @@ export default function Login() {
             boxShadow: "0 0 60px var(--qf-cyan-glow)",
           }}
         >
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              color: "var(--qf-text-muted)",
-              letterSpacing: 2,
-              marginBottom: 24,
-              textAlign: "center",
-            }}
-          >
-            OPERATOR AUTHENTICATION
+          <div style={{ textAlign: "center", marginBottom: 24 }}>
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                color: "var(--qf-text-muted)",
+                letterSpacing: 2,
+              }}
+            >
+              CREATE OPERATOR ACCOUNT
+            </div>
           </div>
 
           <form onSubmit={handleSubmit}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 14,
+                marginBottom: 16,
+              }}
+            >
+              <div>
+                <label className="field-label">USERNAME *</label>
+                <input
+                  className="qf-input"
+                  type="text"
+                  autoComplete="username"
+                  placeholder="j.operator"
+                  value={form.username}
+                  onChange={(e) => set("username", e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="field-label">FULL NAME</label>
+                <input
+                  className="qf-input"
+                  type="text"
+                  autoComplete="name"
+                  placeholder="Jane Operator"
+                  value={form.full_name}
+                  onChange={(e) => set("full_name", e.target.value)}
+                />
+              </div>
+            </div>
+
             <div style={{ marginBottom: 16 }}>
-              <label
-                style={{
-                  display: "block",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  color: "var(--qf-text-muted)",
-                  letterSpacing: 1,
-                  marginBottom: 6,
-                }}
-              >
-                USERNAME
-              </label>
+              <label className="field-label">EMAIL *</label>
               <input
                 className="qf-input"
-                type="text"
-                autoComplete="username"
-                placeholder="Enter username"
-                value={form.username}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, username: e.target.value }))
-                }
+                type="email"
+                autoComplete="email"
+                placeholder="jane@yourcompany.com"
+                value={form.email}
+                onChange={(e) => set("email", e.target.value)}
                 required
               />
             </div>
 
-            <div style={{ marginBottom: 24 }}>
-              <label
-                style={{
-                  display: "block",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  color: "var(--qf-text-muted)",
-                  letterSpacing: 1,
-                  marginBottom: 6,
-                }}
-              >
-                PASSWORD
-              </label>
-              <input
-                className="qf-input"
-                type="password"
-                autoComplete="current-password"
-                placeholder="Enter password"
-                value={form.password}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, password: e.target.value }))
-                }
-                required
-              />
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 14,
+                marginBottom: 8,
+              }}
+            >
+              <div>
+                <label className="field-label">PASSWORD *</label>
+                <input
+                  className="qf-input"
+                  type="password"
+                  autoComplete="new-password"
+                  placeholder="Min. 8 characters"
+                  value={form.password}
+                  onChange={(e) => set("password", e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="field-label">CONFIRM PASSWORD *</label>
+                <input
+                  className="qf-input"
+                  type="password"
+                  autoComplete="new-password"
+                  placeholder="Repeat password"
+                  value={form.confirmPassword}
+                  onChange={(e) => set("confirmPassword", e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                color: "var(--qf-text-muted)",
+                marginBottom: 20,
+                letterSpacing: 0.5,
+              }}
+            >
+              New accounts are created with OPERATOR access. An administrator
+              can adjust roles later in Settings → Users.
             </div>
 
             {error && (
@@ -242,35 +317,13 @@ export default function Login() {
                       display: "inline-block",
                     }}
                   />
-                  AUTHENTICATING...
+                  CREATING ACCOUNT...
                 </span>
               ) : (
-                "ACCESS SYSTEM"
+                "CREATE ACCOUNT"
               )}
             </button>
           </form>
-
-          {/* Default credentials hint */}
-          <div
-            style={{
-              marginTop: 20,
-              padding: "10px 14px",
-              background: "var(--qf-bg-surface)",
-              borderRadius: 8,
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              color: "var(--qf-text-muted)",
-              lineHeight: 1.7,
-            }}
-          >
-            DEFAULT CREDENTIALS (change after first login)
-            <br />
-            USERNAME: <span style={{ color: "var(--qf-cyan)" }}>
-              admin
-            </span>{" "}
-            &nbsp; PASSWORD:{" "}
-            <span style={{ color: "var(--qf-cyan)" }}>quantumfence</span>
-          </div>
 
           <div
             style={{
@@ -281,9 +334,9 @@ export default function Login() {
               color: "var(--qf-text-muted)",
             }}
           >
-            Need access?{" "}
-            <Link to="/signup" className="qf-link">
-              Create an account
+            Already have access?{" "}
+            <Link to="/login" className="qf-link">
+              Sign in
             </Link>
           </div>
         </div>
@@ -303,12 +356,6 @@ export default function Login() {
           <Link to="/" className="qf-link" style={{ fontSize: 10 }}>
             ← Back to home
           </Link>
-          <br />
-          <br />
-          QUANTUMFENCE v1.0.0 &nbsp;·&nbsp; QUANTUM-ACCELERATED PERIMETER
-          DEFENSE
-          <br />
-          ALL ACCESS ATTEMPTS ARE LOGGED AND MONITORED
         </div>
       </div>
     </div>

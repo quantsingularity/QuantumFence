@@ -34,11 +34,22 @@ export function AuthProvider({ children }) {
     return userData;
   };
 
+  // Register a new account, then log straight in so the user lands on the
+  // dashboard without a second form submission.
+  const register = async (data) => {
+    await authApi.register(data);
+    return login(data.username, data.password);
+  };
+
   const logout = () => {
     localStorage.removeItem("qf_token");
     localStorage.removeItem("qf_refresh");
     setUser(null);
   };
+
+  // Merge freshly-saved fields (e.g. from the Profile page) into local state
+  // without a full re-fetch.
+  const updateUser = (patch) => setUser((u) => (u ? { ...u, ...patch } : u));
 
   return (
     <AuthContext.Provider
@@ -47,7 +58,9 @@ export function AuthProvider({ children }) {
         loading,
         isAuthenticated: !!user,
         login,
+        register,
         logout,
+        updateUser,
       }}
     >
       {children}

@@ -34,6 +34,9 @@ class GeofenceUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     coordinates: Optional[list] = None
+    center_lat: Optional[float] = None
+    center_lng: Optional[float] = None
+    radius_meters: Optional[float] = None
     buffer_meters: Optional[float] = None
     is_active: Optional[bool] = None
     alert_on_entry: Optional[bool] = None

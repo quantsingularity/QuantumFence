@@ -4,11 +4,12 @@ import { useAuth } from "../context/AuthContext";
 import { useWebSocket } from "../context/WebSocketContext";
 
 const NAV = [
-  { path: "/", icon: "⬡", label: "DASHBOARD" },
+  { path: "/dashboard", icon: "⬡", label: "DASHBOARD" },
   { path: "/cameras", icon: "◉", label: "CAMERAS" },
   { path: "/alerts", icon: "⚠", label: "ALERTS" },
   { path: "/drones", icon: "◈", label: "DRONE WATCH" },
   { path: "/map", icon: "⊕", label: "MAP VIEW" },
+  { path: "/geofences", icon: "▲", label: "GEOFENCES" },
   { path: "/analytics", icon: "▣", label: "ANALYTICS" },
   { path: "/settings", icon: "⊙", label: "SETTINGS" },
 ];
@@ -170,10 +171,7 @@ export default function Layout({ children }) {
         {/* ── Navigation ─────────────────────────────────────────────────────── */}
         <nav style={{ flex: 1, overflowY: "auto", paddingTop: 4 }}>
           {NAV.map(({ path, icon, label }) => {
-            const isActive =
-              path === "/"
-                ? location.pathname === "/"
-                : location.pathname.startsWith(path);
+            const isActive = location.pathname.startsWith(path);
             const isAlert = path === "/alerts" && alertFlash;
             const isDrone = path === "/drones" && droneFlash;
             const hasUnread = path === "/alerts" && unreadAlerts > 0;
@@ -260,49 +258,67 @@ export default function Layout({ children }) {
             gap: 10,
           }}
         >
-          <div
+          <button
+            onClick={() => navigate("/profile")}
+            title="View profile"
             style={{
-              width: 34,
-              height: 34,
-              borderRadius: 9,
-              flexShrink: 0,
-              background: "var(--qf-bg-surface)",
-              border: "1px solid var(--qf-border)",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              fontSize: 14,
-              color: "var(--qf-cyan)",
-              fontWeight: 700,
-              fontFamily: "var(--font-display)",
+              gap: 10,
+              flex: 1,
+              minWidth: 0,
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+              textAlign: "left",
             }}
           >
-            {user?.username?.[0]?.toUpperCase() || "U"}
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
-                fontSize: 13,
-                fontWeight: 600,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
+                width: 34,
+                height: 34,
+                borderRadius: 9,
+                flexShrink: 0,
+                background: "var(--qf-bg-surface)",
+                border: `1px solid ${location.pathname === "/profile" ? "var(--qf-cyan)" : "var(--qf-border)"}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 14,
+                color: "var(--qf-cyan)",
+                fontWeight: 700,
+                fontFamily: "var(--font-display)",
               }}
             >
-              {user?.full_name || user?.username}
+              {user?.username?.[0]?.toUpperCase() || "U"}
             </div>
-            <div
-              style={{
-                fontSize: 10,
-                color: "var(--qf-text-muted)",
-                textTransform: "uppercase",
-                letterSpacing: 1,
-                fontFamily: "var(--font-mono)",
-              }}
-            >
-              {user?.role}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  color: "var(--qf-text-primary)",
+                }}
+              >
+                {user?.full_name || user?.username}
+              </div>
+              <div
+                style={{
+                  fontSize: 10,
+                  color: "var(--qf-text-muted)",
+                  textTransform: "uppercase",
+                  letterSpacing: 1,
+                  fontFamily: "var(--font-mono)",
+                }}
+              >
+                {user?.role}
+              </div>
             </div>
-          </div>
+          </button>
           <button
             onClick={handleLogout}
             title="Logout"

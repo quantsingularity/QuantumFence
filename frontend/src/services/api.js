@@ -90,9 +90,19 @@ export const authApi = {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
+  register: (data) => api.post("/auth/register", data),
   me: () => api.get("/auth/me"),
+  updateMe: (data) => api.put("/auth/me", data),
+  changePassword: (currentPassword, newPassword) =>
+    api.post("/auth/change-password", {
+      current_password: currentPassword,
+      new_password: newPassword,
+    }),
   refresh: (token) =>
     api.post("/auth/refresh", null, { params: { refresh_token: token } }),
+  // Admin-only
+  listUsers: () => api.get("/auth/users"),
+  updateUser: (id, data) => api.patch(`/auth/users/${id}`, data),
 };
 
 // ── System API ───────────────────────────────────────────────────────────────

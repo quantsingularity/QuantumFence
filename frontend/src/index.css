@@ -380,6 +380,55 @@ body {
   background: var(--qf-bg-hover);
 }
 
+/* ── Shared field / form helpers (used across auth + CRUD pages) ─────────────── */
+.field-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--qf-text-muted);
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.qf-link {
+  color: var(--qf-cyan);
+  text-decoration: none;
+  border-bottom: 1px solid var(--qf-cyan-dim);
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.qf-link:hover {
+  color: var(--qf-green);
+  border-color: var(--qf-green-dim);
+}
+
+.qf-container {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.qf-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--qf-text-secondary);
+  letter-spacing: 0.5px;
+}
+.qf-checkbox-row input[type="checkbox"] {
+  accent-color: var(--qf-cyan);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
 /* ── Misc ──────────────────────────────────────────────────────────────────── */
 .scan-overlay {
   position: fixed;

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { systemApi } from "../services/api";
+import React, { useState, useEffect, useCallback } from "react";
+import { systemApi, authApi } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 function Field({ label, defaultValue, type = "text", placeholder }) {
@@ -49,11 +49,128 @@ function Toggle({ label, defaultOn = false }) {
   );
 }
 
+const NEW_USER_INITIAL = {
+  username: "",
+  full_name: "",
+  email: "",
+  password: "",
+  role: "operator",
+};
+
 export default function Settings() {
   const [tab, setTab] = useState("system");
   const [saved, setSaved] = useState(false);
   const [health, setHealth] = useState(null);
   const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+
+  // ── Users tab state ──────────────────────────────────────────────────────
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [newUser, setNewUser] = useState(NEW_USER_INITIAL);
+  const [creatingUser, setCreatingUser] = useState(false);
+  const [userMsg, setUserMsg] = useState({ kind: "", text: "" });
+  const [updatingUserId, setUpdatingUserId] = useState(null);
+
+  const loadUsers = useCallback(async () => {
+    if (!isAdmin) return;
+    setUsersLoading(true);
+    try {
+      const r = await authApi.listUsers();
+      setUsers(r.data);
+    } catch (e) {
+      setUserMsg({
+        kind: "error",
+        text: e.response?.data?.detail || "Could not load users",
+      });
+    } finally {
+      setUsersLoading(false);
+    }
+  }, [isAdmin]);
+
+  useEffect(() => {
+    if (tab === "users") loadUsers();
+  }, [tab, loadUsers]);
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    setUserMsg({ kind: "", text: "" });
+
+    if (
+      !newUser.username.trim() ||
+      !newUser.email.trim() ||
+      !newUser.password
+    ) {
+      setUserMsg({
+        kind: "error",
+        text: "Username, email, and password are required",
+      });
+      return;
+    }
+    if (newUser.password.length < 8) {
+      setUserMsg({
+        kind: "error",
+        text: "Password must be at least 8 characters",
+      });
+      return;
+    }
+
+    setCreatingUser(true);
+    try {
+      await authApi.register({
+        username: newUser.username.trim(),
+        email: newUser.email.trim(),
+        password: newUser.password,
+        full_name: newUser.full_name.trim() || undefined,
+        role: newUser.role,
+      });
+      setUserMsg({
+        kind: "success",
+        text: `User "${newUser.username}" created`,
+      });
+      setNewUser(NEW_USER_INITIAL);
+      await loadUsers();
+    } catch (e) {
+      setUserMsg({
+        kind: "error",
+        text: e.response?.data?.detail || "Could not create user",
+      });
+    } finally {
+      setCreatingUser(false);
+    }
+  };
+
+  const handleRoleChange = async (targetUser, role) => {
+    setUpdatingUserId(targetUser.id);
+    try {
+      await authApi.updateUser(targetUser.id, { role });
+      await loadUsers();
+    } catch (e) {
+      setUserMsg({
+        kind: "error",
+        text: e.response?.data?.detail || "Could not update role",
+      });
+    } finally {
+      setUpdatingUserId(null);
+    }
+  };
+
+  const handleToggleUserActive = async (targetUser) => {
+    setUpdatingUserId(targetUser.id);
+    try {
+      await authApi.updateUser(targetUser.id, {
+        is_active: !targetUser.is_active,
+      });
+      await loadUsers();
+    } catch (e) {
+      setUserMsg({
+        kind: "error",
+        text: e.response?.data?.detail || "Could not update user",
+      });
+    } finally {
+      setUpdatingUserId(null);
+    }
+  };
 
   const save = () => {
     setSaved(true);
@@ -73,7 +190,7 @@ export default function Settings() {
     { id: "system", label: "SYSTEM" },
     { id: "ai", label: "AI ENGINE" },
     { id: "notifications", label: "NOTIFICATIONS" },
-    { id: "users", label: "USERS" },
+    ...(isAdmin ? [{ id: "users", label: "USERS" }] : []),
     { id: "diagnostics", label: "DIAGNOSTICS" },
   ];
 
@@ -328,8 +445,8 @@ export default function Settings() {
           </div>
         )}
 
-        {/* ── Users ─────────────────────────────────────────────────────────── */}
-        {tab === "users" && (
+        {/* ── Users (admin only) ────────────────────────────────────────────── */}
+        {tab === "users" && isAdmin && (
           <div style={{ display: "grid", gap: 18 }}>
             <h3
               style={{
@@ -341,45 +458,220 @@ export default function Settings() {
             >
               CREATE NEW USER
             </h3>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 14,
-              }}
-            >
-              <Field label="Username" />
-              <Field label="Full Name" />
-              <Field label="Email" type="email" />
-              <Field label="Password" type="password" />
-            </div>
-            <div>
-              <label
+
+            <form onSubmit={handleCreateUser}>
+              <div
                 style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  color: "var(--qf-text-muted)",
-                  letterSpacing: 1,
-                  display: "block",
-                  marginBottom: 6,
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 14,
+                  marginBottom: 14,
                 }}
               >
-                ROLE
-              </label>
-              <select className="qf-select" style={{ width: "100%" }}>
-                {["admin", "operator", "viewer"].map((r) => (
-                  <option key={r} value={r}>
-                    {r.toUpperCase()}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <button
-              className="qf-btn qf-btn-primary"
-              style={{ justifyContent: "center" }}
+                <div>
+                  <label className="field-label">USERNAME *</label>
+                  <input
+                    className="qf-input"
+                    value={newUser.username}
+                    onChange={(e) =>
+                      setNewUser((f) => ({ ...f, username: e.target.value }))
+                    }
+                    placeholder="j.operator"
+                  />
+                </div>
+                <div>
+                  <label className="field-label">FULL NAME</label>
+                  <input
+                    className="qf-input"
+                    value={newUser.full_name}
+                    onChange={(e) =>
+                      setNewUser((f) => ({ ...f, full_name: e.target.value }))
+                    }
+                    placeholder="Jane Operator"
+                  />
+                </div>
+                <div>
+                  <label className="field-label">EMAIL *</label>
+                  <input
+                    className="qf-input"
+                    type="email"
+                    value={newUser.email}
+                    onChange={(e) =>
+                      setNewUser((f) => ({ ...f, email: e.target.value }))
+                    }
+                    placeholder="jane@yourcompany.com"
+                  />
+                </div>
+                <div>
+                  <label className="field-label">PASSWORD *</label>
+                  <input
+                    className="qf-input"
+                    type="password"
+                    value={newUser.password}
+                    onChange={(e) =>
+                      setNewUser((f) => ({ ...f, password: e.target.value }))
+                    }
+                    placeholder="Min. 8 characters"
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label className="field-label">ROLE</label>
+                <select
+                  className="qf-select"
+                  style={{ width: "100%" }}
+                  value={newUser.role}
+                  onChange={(e) =>
+                    setNewUser((f) => ({ ...f, role: e.target.value }))
+                  }
+                >
+                  {["admin", "operator", "viewer"].map((r) => (
+                    <option key={r} value={r}>
+                      {r.toUpperCase()}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {userMsg.text && (
+                <div
+                  style={{
+                    background:
+                      userMsg.kind === "success"
+                        ? "var(--qf-green-dim)"
+                        : "var(--qf-red-dim)",
+                    border: `1px solid ${userMsg.kind === "success" ? "var(--qf-green)" : "var(--qf-red)"}`,
+                    borderRadius: 8,
+                    padding: "10px 14px",
+                    marginBottom: 14,
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 12,
+                    color:
+                      userMsg.kind === "success"
+                        ? "var(--qf-green)"
+                        : "var(--qf-red)",
+                  }}
+                >
+                  {userMsg.kind === "success" ? "✓" : "⚠"} {userMsg.text}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="qf-btn qf-btn-primary"
+                style={{ justifyContent: "center" }}
+                disabled={creatingUser}
+              >
+                {creatingUser ? "CREATING..." : "+ CREATE USER"}
+              </button>
+            </form>
+
+            <hr
+              style={{
+                border: "none",
+                borderTop: "1px solid var(--qf-border)",
+                margin: "4px 0",
+              }}
+            />
+
+            <h3
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                color: "var(--qf-text-muted)",
+                letterSpacing: 2,
+              }}
             >
-              + CREATE USER
-            </button>
+              ALL USERS {usersLoading ? "· LOADING…" : `· ${users.length}`}
+            </h3>
+
+            <div style={{ overflowX: "auto" }}>
+              <table className="qf-table">
+                <thead>
+                  <tr>
+                    <th>USER</th>
+                    <th>EMAIL</th>
+                    <th>ROLE</th>
+                    <th>STATUS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((u) => {
+                    const isSelf = u.id === user?.id;
+                    const busy = updatingUserId === u.id;
+                    return (
+                      <tr key={u.id}>
+                        <td>
+                          <div style={{ fontWeight: 600 }}>
+                            {u.full_name || u.username}
+                          </div>
+                          <div
+                            style={{
+                              fontFamily: "var(--font-mono)",
+                              fontSize: 10,
+                              color: "var(--qf-text-muted)",
+                            }}
+                          >
+                            @{u.username} {isSelf && "(you)"}
+                          </div>
+                        </td>
+                        <td>{u.email}</td>
+                        <td>
+                          <select
+                            className="qf-select"
+                            value={u.role}
+                            disabled={busy}
+                            onChange={(e) =>
+                              handleRoleChange(u, e.target.value)
+                            }
+                            style={{ fontSize: 11, padding: "6px 10px" }}
+                          >
+                            {["admin", "operator", "viewer"].map((r) => (
+                              <option key={r} value={r}>
+                                {r.toUpperCase()}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => handleToggleUserActive(u)}
+                            disabled={busy || isSelf}
+                            title={
+                              isSelf
+                                ? "You cannot deactivate your own account"
+                                : undefined
+                            }
+                            className={`badge ${u.is_active ? "badge-low" : "badge-critical"}`}
+                            style={{
+                              border: "none",
+                              cursor: isSelf ? "not-allowed" : "pointer",
+                              opacity: isSelf ? 0.5 : 1,
+                            }}
+                          >
+                            {u.is_active ? "ACTIVE" : "DISABLED"}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {!usersLoading && users.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={4}
+                        style={{
+                          textAlign: "center",
+                          color: "var(--qf-text-muted)",
+                        }}
+                      >
+                        No users found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
 
             <hr
               style={{
@@ -552,7 +844,7 @@ export default function Settings() {
         )}
 
         {/* Save footer */}
-        {tab !== "diagnostics" && (
+        {tab !== "diagnostics" && tab !== "users" && (
           <div
             style={{
               marginTop: 24,

@@ -23,6 +23,11 @@ pwd_context = CryptContext(
     bcrypt__truncate_error=False,  # passlib >= 1.7.4 on Py3.11 raises ValueError otherwise
 )
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+# Does not error when no token is supplied — used to let /register tell apart
+# an anonymous self-signup from an authenticated admin creating a user.
+optional_oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/api/auth/login", auto_error=False
+)
 
 
 # ─── Schemas ─────────────────────────────────────────────────────────────────
@@ -51,6 +56,21 @@ class Token(BaseModel):
     refresh_token: str
     token_type: str
     user: UserOut
+
+
+class ProfileUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[str] = None
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class UserAdminUpdate(BaseModel):
+    role: Optional[UserRole] = None
+    is_active: Optional[bool] = None
 
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -113,20 +133,59 @@ async def require_admin(
     return current_user
 
 
+async def get_optional_admin(
+    token: Optional[str] = Depends(optional_oauth2_scheme),
+    db: Session = Depends(get_db),
+) -> Optional[User]:
+    """Returns the caller only if they are an authenticated, active admin;
+    returns None for anonymous requests or any invalid/non-admin token
+    (never raises, so this is safe to use on a public endpoint)."""
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        username = payload.get("sub")
+        if not username or payload.get("type") != "access":
+            return None
+    except JWTError:
+        return None
+    user = db.query(User).filter(User.username == username).first()
+    if user and user.is_active and user.role == UserRole.ADMIN:
+        return user
+    return None
+
+
 # ─── Routes ──────────────────────────────────────────────────────────────────
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserCreate, db: Session = Depends(get_db)):
+async def register(
+    user_data: UserCreate,
+    db: Session = Depends(get_db),
+    requesting_admin: Optional[User] = Depends(get_optional_admin),
+):
     if db.query(User).filter(User.username == user_data.username).first():
         raise HTTPException(400, "Username already registered")
     if db.query(User).filter(User.email == user_data.email).first():
         raise HTTPException(400, "Email already registered")
+
+    # This endpoint is intentionally public so the Sign Up page can call it
+    # without a token. Only an already-authenticated admin (e.g. creating a
+    # teammate from Settings → Users) may hand out a non-default role;
+    # anonymous self-signup is always forced to OPERATOR regardless of what
+    # the request body asks for.
+    role = user_data.role
+    if role != UserRole.OPERATOR and requesting_admin is None:
+        raise HTTPException(
+            403, "Only an administrator can assign roles other than operator"
+        )
 
     user = User(
         username=user_data.username,
         email=user_data.email,
         hashed_password=hash_password(user_data.password),
         full_name=user_data.full_name,
-        role=user_data.role,
+        role=role,
     )
     db.add(user)
     db.commit()
@@ -164,6 +223,71 @@ async def login(
 @router.get("/me", response_model=UserOut)
 async def get_me(current_user: User = Depends(get_current_user)):
     return UserOut.model_validate(current_user)
+
+
+@router.put("/me", response_model=UserOut)
+async def update_me(
+    update: ProfileUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Self-service profile update (full name / email)."""
+    if update.email and update.email != current_user.email:
+        if db.query(User).filter(User.email == update.email).first():
+            raise HTTPException(400, "Email already registered")
+        current_user.email = update.email
+    if update.full_name is not None:
+        current_user.full_name = update.full_name
+    db.commit()
+    db.refresh(current_user)
+    return UserOut.model_validate(current_user)
+
+
+@router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT)
+async def change_password(
+    payload: PasswordChange,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Self-service password change; requires current password."""
+    if not verify_password(payload.current_password, current_user.hashed_password):
+        raise HTTPException(400, "Current password is incorrect")
+    if len(payload.new_password) < 8:
+        raise HTTPException(400, "New password must be at least 8 characters")
+    current_user.hashed_password = hash_password(payload.new_password)
+    db.commit()
+    return None
+
+
+@router.get("/users", response_model=list[UserOut])
+async def list_users(
+    current_user: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Admin-only: list all system users."""
+    return [UserOut.model_validate(u) for u in db.query(User).order_by(User.id).all()]
+
+
+@router.patch("/users/{user_id}", response_model=UserOut)
+async def update_user_admin(
+    user_id: int,
+    update: UserAdminUpdate,
+    current_user: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Admin-only: update another user's role or active status."""
+    target = db.query(User).filter(User.id == user_id).first()
+    if not target:
+        raise HTTPException(404, "User not found")
+    if update.role is not None:
+        target.role = update.role
+    if update.is_active is not None:
+        if target.id == current_user.id and update.is_active is False:
+            raise HTTPException(400, "You cannot deactivate your own account")
+        target.is_active = update.is_active
+    db.commit()
+    db.refresh(target)
+    return UserOut.model_validate(target)
 
 
 @router.post("/refresh", response_model=Token)

@@ -2,11 +2,27 @@
 
 ![CI/CD Status](https://img.shields.io/github/actions/workflow/status/quantsingularity/QuantumFence/cicd.yml?branch=main&label=CI/CD&logo=github)
 [![Test Coverage](https://img.shields.io/badge/coverage-85%25-green)](https://github.com/quantsingularity/QuantumFence/tree/main/tests)
-[![License](https://img.shields.io/github/license/quantsingularity/AlphaMind)](https://github.com/quantsingularity/QuantumFence/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/quantsingularity/QuantumFence)](https://github.com/quantsingularity/QuantumFence/blob/main/LICENSE)
 
 ### Quantum-Accelerated Perimeter Defense AI System
 
 > **AI-powered multi-camera perimeter security with real-time drone detection, geofencing, and Claude AI threat analysis.**
+
+---
+
+## Tech Stack
+
+| Layer                | Technology                                             |
+| -------------------- | ------------------------------------------------------ |
+| Frontend             | React 18, Vite, React Router, Axios, Leaflet, Recharts |
+| Backend              | FastAPI, SQLAlchemy 2.0, Uvicorn                       |
+| AI / Computer Vision | YOLOv8 (Ultralytics), PyTorch, OpenCV                  |
+| Threat Analysis      | Claude (Anthropic API)                                 |
+| Database             | PostgreSQL 16 (production), SQLite (development)       |
+| Cache                | Redis 7                                                |
+| Monitoring           | Prometheus, Grafana                                    |
+| Infrastructure       | Docker, Kubernetes, Terraform, Nginx                   |
+| CI/CD                | GitHub Actions                                         |
 
 ---
 
@@ -15,76 +31,16 @@
 ```
 QuantumFence/
 ├── code/
-│   ├── backend/                  # FastAPI Python backend
-│   │   ├── main.py               # Application entry point
-│   │   ├── config/
-│   │   │   └── settings.py       # All system configuration
-│   │   ├── api/
-│   │   │   ├── routes/           # REST API endpoints
-│   │   │   │   ├── auth.py       # JWT authentication
-│   │   │   │   ├── cameras.py    # Camera CRUD + management
-│   │   │   │   ├── alerts.py     # Alert management
-│   │   │   │   ├── drones.py     # Drone detections
-│   │   │   │   ├── analytics.py  # Analytics & reporting
-│   │   │   │   └── geofences.py  # Geofence zones
-│   │   │   └── websocket.py      # Real-time WebSocket hub
-│   │   ├── database/
-│   │   │   ├── database.py       # SQLAlchemy engine & session
-│   │   │   └── models.py         # All ORM models
-│   │   ├── services/
-│   │   │   ├── detection_service.py      # Camera processing orchestrator
-│   │   │   ├── ai_analysis_service.py    # Claude AI threat analysis
-│   │   │   ├── notification_service.py   # Email & webhook alerts
-│   │   │   └── perimeter_service.py      # Fence breach intelligence
-│   │   └── requirements.txt
-│   ├── ai_models/
-│   │   ├── model_manager.py      # YOLOv8 model loader & runner
-│   │   └── drone_detector.py     # Drone tracking & trajectory analysis
-│   └── integrations/
-│       └── google_earth.py       # Google Maps/Earth KML/API
-├── frontend/                 # React + Vite SPA
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── Home.jsx          # Public marketing homepage (app entry point)
-│   │   │   ├── Login.jsx         # Sign in
-│   │   │   ├── SignUp.jsx        # Self-service account registration
-│   │   │   ├── Dashboard.jsx     # Live command center
-│   │   │   ├── Cameras.jsx       # Camera management
-│   │   │   ├── Alerts.jsx        # Alert management table
-│   │   │   ├── DroneWatch.jsx    # Drone radar & log
-│   │   │   ├── MapView.jsx       # Leaflet tactical map
-│   │   │   ├── Geofences.jsx     # Geofence zone CRUD (polygon & circle)
-│   │   │   ├── Analytics.jsx     # Charts & reporting
-│   │   │   ├── Settings.jsx      # System configuration + admin user management
-│   │   │   ├── Profile.jsx       # Account profile & password management
-│   │   │   └── NotFound.jsx      # 404 page
-│   │   ├── components/
-│   │   │   └── Layout.jsx        # Sidebar navigation (authenticated shell)
-│   │   ├── context/
-│   │   │   ├── AuthContext.jsx   # JWT auth state (login/register/logout)
-│   │   │   └── WebSocketContext.jsx  # Real-time events
-│   │   └── services/
-│   │       └── api.js            # Axios API client
-├── infrastructure/
-│   ├── docker/
-│   │   ├── docker-compose.yml    # Full stack deployment
-│   │   ├── Dockerfile.backend    # Python multi-stage build
-│   │   ├── Dockerfile.frontend   # Node + Nginx build
-│   │   └── prometheus.yml        # Monitoring config
-│   ├── nginx/
-│   │   └── nginx.conf            # Reverse proxy config
-│   ├── kubernetes/
-│   │   └── k8s-deployment.yml    # K8s manifests + HPA
-│   └── terraform/
-│       └── main.tf               # AWS infrastructure as code
-└── scripts/
-    ├── setup/
-    │   ├── setup.sh              # One-click installation
-    │   └── migrate_and_seed.py   # DB init + demo data
-    ├── deployment/
-    │   └── start.sh              # Start all services
-    └── maintenance/
-        └── maintenance.py        # Cleanup & health checks
+│   ├── backend/            # FastAPI REST API, WebSocket hub, and services
+│   ├── ai_models/           # YOLOv8 detection and drone tracking
+│   └── integrations/        # Google Maps / Google Earth KML export
+├── docs/                    # Project documentation
+├── infrastructure/           # Docker, Kubernetes, Terraform, Nginx configs
+├── frontend/                # React (Vite) web dashboard
+├── scripts/                  # Setup, seeding, deployment, and maintenance scripts
+├── .github/workflows/         # CI pipeline (cicd.yml)
+├── LICENSE
+└── README.md
 ```
 
 ---
@@ -93,9 +49,11 @@ QuantumFence/
 
 ### 1. Prerequisites
 
-- Python 3.10+
-- Node.js 18+
-- Git
+| Requirement | Minimum Version    |
+| ----------- | ------------------ |
+| Python      | 3.10+              |
+| Node.js     | 18+                |
+| Git         | any recent version |
 
 ### 2. Install
 
@@ -127,15 +85,18 @@ python ../../scripts/setup/migrate_and_seed.py
 bash scripts/deployment/start.sh
 ```
 
-Access:
+### 6. Access
 
-- **Frontend**: http://localhost:3000 - opens on the public homepage. From
-  there, sign in with an existing account or create a new one; both lead to
-  the protected `/dashboard` and the rest of the command center.
-- **API Docs**: http://localhost:8000/api/docs
-- **Default login**: `admin` / `quantumfence` (seeded by
-  `migrate_and_seed.py`) - or register a new operator account from the
-  homepage at any time.
+| Resource      | Location                                                   |
+| ------------- | ---------------------------------------------------------- |
+| Frontend      | http://localhost:3000 - opens on the public homepage       |
+| API Docs      | http://localhost:8000/api/docs                             |
+| Default login | `admin` / `quantumfence` (seeded by `migrate_and_seed.py`) |
+
+From the homepage, sign in with an existing account or create a new one; both
+lead to the protected `/dashboard` and the rest of the command center. New
+self-service signups always land as an operator - only an admin can grant
+other roles from Settings → Users.
 
 ---
 
@@ -147,71 +108,96 @@ cp .env.example .env   # Edit with your API keys
 docker-compose up -d
 ```
 
+| Service      | Image                     | Port(s)     | Purpose                    |
+| ------------ | ------------------------- | ----------- | -------------------------- |
+| `backend`    | built from `code/backend` | 8000        | REST API and WebSocket hub |
+| `frontend`   | built from `frontend`     | 80, 443     | Serves the web dashboard   |
+| `db`         | `postgres:16-alpine`      | 5432        | Primary database           |
+| `redis`      | `redis:7-alpine`          | 6379        | Cache and pub/sub          |
+| `prometheus` | `prom/prometheus:v2.53.0` | 9090        | Metrics collection         |
+| `grafana`    | `grafana/grafana:11.1.0`  | 3001 → 3000 | Metrics dashboards         |
+
 ---
 
 ## Features
 
 ### Camera Management
 
-- Add unlimited IP/RTSP/USB/HTTP-MJPEG cameras
-- Per-camera detection configuration
-- PTZ control support
-- Night vision tagging
-- Live status dashboard with WebSocket updates
+| Capability           | Details                                            |
+| -------------------- | -------------------------------------------------- |
+| Camera types         | IP, RTSP, USB, and HTTP-MJPEG, unlimited cameras   |
+| Per-camera config    | Independent detection settings for each camera     |
+| PTZ control          | Pan-tilt-zoom support where the camera supports it |
+| Night vision tagging | Flag cameras for low-light detection tuning        |
+| Live status          | Real-time online/offline state over WebSocket      |
 
 ### AI Detection (YOLOv8)
 
-- **Person detection** near fence perimeter
-- **Vehicle detection** (cars, trucks, motorcycles, buses)
-- **Drone/UAV detection** with trajectory tracking
-- Multi-object tracking with approach vector analysis
-- Swarm detection (multiple drones coordinating)
-- Confidence-based alert filtering
+| Capability            | Details                                               |
+| --------------------- | ----------------------------------------------------- |
+| Person detection      | Flags people near the fence perimeter                 |
+| Vehicle detection     | Cars, trucks, motorcycles, and buses                  |
+| Drone/UAV detection   | Includes trajectory tracking                          |
+| Multi-object tracking | Approach vector analysis across frames                |
+| Swarm detection       | Identifies multiple coordinated drones                |
+| Confidence filtering  | Alerts only above a configurable confidence threshold |
 
 ### Claude AI Threat Analysis
 
-- Natural language threat summaries for operators
-- Risk scoring (0.0–1.0) per detection
-- Recommended immediate actions
-- Drone purpose classification (surveillance/recreational/hostile)
-- Multi-threat coordination detection
+| Capability                   | Details                                    |
+| ---------------------------- | ------------------------------------------ |
+| Threat summaries             | Natural-language explanation for operators |
+| Risk scoring                 | 0.0 to 1.0 score per detection             |
+| Recommended actions          | Suggested immediate response               |
+| Drone purpose classification | Surveillance, recreational, or hostile     |
+| Multi-threat coordination    | Flags related threats across cameras       |
 
 ### Geospatial Intelligence
 
-- Google Maps / OpenStreetMap satellite view
-- KML export for Google Earth Pro
-- Draw and manage geofence polygons
-- Camera FOV visualization on map
-- Threat heatmap overlay
-- Real-world location estimation from bounding box
+| Capability          | Details                                         |
+| ------------------- | ----------------------------------------------- |
+| Map providers       | Google Maps and OpenStreetMap satellite view    |
+| KML export          | For Google Earth Pro                            |
+| Geofence zones      | Draw and manage polygon or circle zones         |
+| Camera FOV overlay  | Visualizes field of view on the map             |
+| Threat heatmap      | Overlay of recent activity                      |
+| Location estimation | Real-world position estimated from bounding box |
 
 ### Drone Watch
 
-- Animated radar display
-- Live trajectory analysis
-- Altitude & speed estimation
-- Authorized vs. unauthorized classification
-- Loitering detection
+| Capability           | Details                                    |
+| -------------------- | ------------------------------------------ |
+| Radar display        | Animated live radar                        |
+| Trajectory analysis  | Live path tracking                         |
+| Altitude and speed   | Estimated in real time                     |
+| Authorization status | Authorized vs. unauthorized classification |
+| Loitering detection  | Flags drones lingering in one area         |
 
 ### Analytics
 
-- Detection timeline charts
-- Alert distribution by type
-- Camera performance metrics
-- 24h / 7d / 30d trend analysis
+| Capability         | Details                       |
+| ------------------ | ----------------------------- |
+| Detection timeline | Chart of detections over time |
+| Alert distribution | Breakdown by alert type       |
+| Camera performance | Per-camera metrics            |
+| Trend windows      | 24h, 7d, and 30d views        |
 
 ### Notifications
 
-- HTML email alerts with snapshot attachments
-- Webhook integration (Slack, Teams, custom)
-- Severity-based escalation
-- Alert cooldown management
+| Capability   | Details                               |
+| ------------ | ------------------------------------- |
+| Email alerts | HTML emails with snapshot attachments |
+| Webhooks     | Slack, Teams, or a custom endpoint    |
+| Escalation   | Severity-based escalation rules       |
+| Cooldown     | Prevents alert storms                 |
 
 ### Security
 
-- JWT authentication with refresh tokens
-- Role-based access (Admin / Operator / Viewer)
-- All actions logged to DB
+| Capability     | Details                            |
+| -------------- | ---------------------------------- |
+| Authentication | JWT with refresh tokens            |
+| Roles          | Admin, Operator, and Viewer        |
+| Audit trail    | All actions logged to the database |
 
 ---
 
@@ -222,16 +208,16 @@ Full Swagger docs at: `http://localhost:8000/api/docs`
 | Method | Endpoint                       | Description                         |
 | ------ | ------------------------------ | ----------------------------------- |
 | POST   | `/api/auth/register`           | Create a new account (self-service) |
-| POST   | `/api/auth/login`              | Authenticate and get JWT            |
+| POST   | `/api/auth/login`              | Authenticate and get a JWT          |
 | GET    | `/api/auth/me`                 | Get the current user's profile      |
 | PUT    | `/api/auth/me`                 | Update own profile (name/email)     |
 | POST   | `/api/auth/change-password`    | Change own password                 |
 | GET    | `/api/auth/users`              | List all users (admin only)         |
 | PATCH  | `/api/auth/users/{id}`         | Update a user's role/status (admin) |
 | GET    | `/api/cameras`                 | List all cameras                    |
-| POST   | `/api/cameras`                 | Add new camera                      |
+| POST   | `/api/cameras`                 | Add a new camera                    |
 | GET    | `/api/alerts`                  | List alerts with filters            |
-| POST   | `/api/alerts/{id}/acknowledge` | Acknowledge alert                   |
+| POST   | `/api/alerts/{id}/acknowledge` | Acknowledge an alert                |
 | GET    | `/api/drones`                  | Drone detection log                 |
 | GET    | `/api/analytics/overview`      | System overview stats               |
 | GET    | `/api/geofences`               | List geofence zones                 |
@@ -262,6 +248,13 @@ Key settings in `code/backend/.env`:
 
 Connect to `ws://localhost:8000/ws/{client_id}` for live events:
 
+| Event type        | Fired when                                         |
+| ----------------- | -------------------------------------------------- |
+| `alert`           | A new alert is created                             |
+| `detection`       | A camera reports new detections                    |
+| `drone_detection` | A drone is detected, with an assessed threat level |
+| `camera_status`   | A camera goes online or offline                    |
+
 ```json
 { "type": "alert",           "data": { ... } }
 { "type": "detection",       "data": { "camera_id": 1, "detections": [...] } }
@@ -273,22 +266,14 @@ Connect to `ws://localhost:8000/ws/{client_id}` for live events:
 
 ## Production Deployment
 
-### Docker Compose (Recommended)
+| Method                       | Command                                                                              |
+| ---------------------------- | ------------------------------------------------------------------------------------ |
+| Docker Compose (recommended) | `docker-compose up -d` (see [Docker Deployment](#docker-deployment))                 |
+| Kubernetes                   | `kubectl apply -f infrastructure/kubernetes/k8s-deployment.yml`                      |
+| AWS (Terraform)              | `cd infrastructure/terraform && terraform init && terraform plan && terraform apply` |
 
-Includes: FastAPI backend, React frontend (Nginx), PostgreSQL, Redis, Prometheus, Grafana
-
-### Kubernetes
-
-```bash
-kubectl apply -f infrastructure/kubernetes/k8s-deployment.yml
-```
-
-### AWS (Terraform)
-
-```bash
-cd infrastructure/terraform
-terraform init && terraform plan && terraform apply
-```
+Docker Compose brings up the full stack: FastAPI backend, React frontend
+(behind Nginx), PostgreSQL, Redis, Prometheus, and Grafana.
 
 ---
 

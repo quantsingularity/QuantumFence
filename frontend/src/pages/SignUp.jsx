@@ -60,7 +60,7 @@ export default function SignUp() {
     } catch (err) {
       setError(
         err.response?.data?.detail ||
-          "Could not create account — please try again",
+          "Could not create account - please try again",
       );
     } finally {
       setLoading(false);

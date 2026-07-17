@@ -24,7 +24,7 @@ function Banner({ kind, children }) {
 }
 
 const ROLE_COPY = {
-  admin: "Full system access — manages users, cameras, and configuration.",
+  admin: "Full system access - manages users, cameras, and configuration.",
   operator: "Manages cameras, alerts, and geofences. Cannot manage users.",
   viewer: "Read-only access to dashboards, alerts, and analytics.",
 };

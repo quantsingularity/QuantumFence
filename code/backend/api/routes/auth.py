@@ -23,7 +23,7 @@ pwd_context = CryptContext(
     bcrypt__truncate_error=False,  # passlib >= 1.7.4 on Py3.11 raises ValueError otherwise
 )
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
-# Does not error when no token is supplied — used to let /register tell apart
+# Does not error when no token is supplied - used to let /register tell apart
 # an anonymous self-signup from an authenticated admin creating a user.
 optional_oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/auth/login", auto_error=False
@@ -190,7 +190,6 @@ async def register(
     db.add(user)
     db.commit()
     db.refresh(user)
-    # FIX-15: Pydantic v2 uses model_validate instead of from_orm
     return UserOut.model_validate(user)
 
 
@@ -216,7 +215,7 @@ async def login(
         access_token=create_access_token({"sub": user.username}),
         refresh_token=create_refresh_token({"sub": user.username}),
         token_type="bearer",
-        user=UserOut.model_validate(user),  # FIX-15
+        user=UserOut.model_validate(user),
     )
 
 
@@ -313,5 +312,5 @@ async def refresh_token_endpoint(
         access_token=create_access_token({"sub": user.username}),
         refresh_token=create_refresh_token({"sub": user.username}),
         token_type="bearer",
-        user=UserOut.model_validate(user),  # FIX-15
+        user=UserOut.model_validate(user),
     )

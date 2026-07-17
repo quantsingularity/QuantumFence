@@ -7,7 +7,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // On mount — try to restore session from stored token
+  // On mount - try to restore session from stored token
   useEffect(() => {
     const token = localStorage.getItem("qf_token");
     if (!token) {

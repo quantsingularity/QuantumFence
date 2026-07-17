@@ -1,7 +1,7 @@
 """
 Tests for AIAnalysisService.
 Covers the Claude API integration, response parsing, fallback paths,
-and threat level derivation — all without real API calls.
+and threat level derivation - all without real API calls.
 """
 
 import json

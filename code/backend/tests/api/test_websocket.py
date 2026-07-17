@@ -1,6 +1,6 @@
 """
 Tests for the WebSocket ConnectionManager (api/websocket.py).
-All WebSocket objects are mocked — no real network needed.
+All WebSocket objects are mocked - no real network needed.
 """
 
 import json

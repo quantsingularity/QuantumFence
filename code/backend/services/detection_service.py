@@ -11,13 +11,13 @@ from typing import Dict, Optional
 
 import cv2
 import numpy as np
-
-# Module-level imports so tests can patch them with patch("services.detection_service.X")
-from ai_models.model_manager import ModelManager
 from api.websocket import manager
 from config.settings import settings
 from database.database import SessionLocal
 from services.ai_analysis_service import AIAnalysisService
+
+# Module-level imports so tests can patch them with patch("services.detection_service.X")
+from ai_models.model_manager import ModelManager
 
 logger = logging.getLogger("quantumfence.detection")
 
@@ -50,7 +50,7 @@ class CameraProcessor:
                 logger.warning(f"Camera {self.camera_id}: could not open {url}")
                 self.cap = None
         except Exception as e:
-            logger.error(f"Camera {self.camera_id}: stream error — {e}")
+            logger.error(f"Camera {self.camera_id}: stream error - {e}")
             self.cap = None
 
     def get_frame(self) -> Optional[np.ndarray]:
@@ -68,7 +68,7 @@ class CameraProcessor:
         ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
         cv2.putText(
             frame,
-            f"CAM {self.camera_id:02d}  —  {ts}",
+            f"CAM {self.camera_id:02d}  -  {ts}",
             (20, 50),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.7,
@@ -117,7 +117,7 @@ class DetectionService:
         self.model_manager = None
         self.ai_analysis = None
         self.db_session_factory = None
-        # FIX-3: Throttle last_seen writes — track last write time per camera
+        # Track last last_seen write time per camera, to throttle DB writes
         self._last_touch: Dict[int, datetime] = {}
 
     async def initialize(self):
@@ -237,15 +237,15 @@ class DetectionService:
                 ):
                     entry = {**det, "type": "drone", "timestamp": timestamp.isoformat()}
                     drone_results.append(entry)
-                    # FIX-1: Drone detection handled exclusively here — not forwarded to
-                    # _create_alert so a separate Alert + DroneDetection row are NOT
-                    # both created for the same event.
+                    # Drone detection is handled exclusively here, not forwarded to
+                    # _create_alert, so a separate Alert + DroneDetection row are
+                    # not both created for the same event.
                     if det["confidence"] >= settings.AI_CONFIDENCE_THRESHOLD:
                         await self._handle_drone_detection(
                             camera_id, det, frame, timestamp
                         )
 
-            # Person/vehicle alerts only — drones handled above
+            # Person/vehicle alerts only - drones handled above
             confident_pv = [
                 r
                 for r in person_vehicle_results
@@ -271,7 +271,6 @@ class DetectionService:
             if confident_pv:
                 await self._create_alert(camera_id, confident_pv, frame, timestamp)
 
-            # FIX-3: Throttled last_seen write
             self._touch_camera_throttled(camera_id, timestamp)
 
         except Exception as e:
@@ -289,7 +288,6 @@ class DetectionService:
         snap = await self._save_snapshot(camera_id, frame, "drone", timestamp)
 
         if self.ai_analysis:
-            # FIX-5: Wrap synchronous Anthropic client in asyncio.to_thread
             analysis = await asyncio.to_thread(
                 self._sync_analyze_drone,
                 det["confidence"],
@@ -307,7 +305,6 @@ class DetectionService:
                 "recommended_action": "Alert security and track trajectory.",
             }
 
-        # FIX-2: Use try/finally to guarantee DB session is closed
         if self.db_session_factory:
             db = None
             try:
@@ -426,7 +423,7 @@ class DetectionService:
             }
 
             db = self.db_session_factory()
-            title = f"{primary['type'].title()} detected — Camera {camera_id:02d}"
+            title = f"{primary['type'].title()} detected - Camera {camera_id:02d}"
             alert = Alert(
                 camera_id=camera_id,
                 alert_type=type_map.get(primary["type"], AlertType.UNKNOWN_OBJECT),
@@ -443,7 +440,6 @@ class DetectionService:
             )
             db.add(alert)
             db.commit()
-            # FIX-4: Capture values BEFORE closing the session
             alert_id = alert.id
             alert_title = alert.title
         except Exception as e:
@@ -540,7 +536,7 @@ class DetectionService:
 
     def _touch_camera_throttled(self, camera_id: int, timestamp: datetime):
         """
-        FIX-3: Write last_seen at most once every TOUCH_CAMERA_INTERVAL_SECONDS
+        Write last_seen at most once every TOUCH_CAMERA_INTERVAL_SECONDS
         to avoid a DB write storm on every detected frame.
         """
         interval = timedelta(seconds=settings.TOUCH_CAMERA_INTERVAL_SECONDS)

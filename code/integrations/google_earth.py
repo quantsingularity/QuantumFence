@@ -54,7 +54,7 @@ class GoogleEarthIntegration:
         if not self.api_key:
             return self._generate_osm_url()
 
-        # FIX-26: build params then encode — markers as repeated params
+        # Build params, then encode markers as repeated params
         parts = [
             f"center={self.center_lat},{self.center_lng}",
             f"zoom={zoom}",
@@ -95,7 +95,7 @@ class GoogleEarthIntegration:
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<kml xmlns="http://www.opengis.net/kml/2.2">',
             "<Document>",
-            f"<name>QuantumFence — Security Map — {ts}</name>",
+            f"<name>QuantumFence - Security Map - {ts}</name>",
             "<description>QuantumFence Perimeter Security Visualization</description>",
             self._kml_style("camera_online", "ff00ff00", "camera_icon"),
             self._kml_style("camera_offline", "ff7a9bb5", "camera_icon"),
@@ -144,7 +144,7 @@ class GoogleEarthIntegration:
                 parts.append(
                     f"<Placemark>"
                     f"<name>{t.threat_type.replace('_', ' ').title()}</name>"
-                    f"<description>{desc} — {ts_s}</description>"
+                    f"<description>{desc} - {ts_s}</description>"
                     f"<styleUrl>#threat_style</styleUrl>"
                     f"<Point><coordinates>{t.lng},{t.lat},0</coordinates></Point>"
                     f"</Placemark>"
@@ -167,7 +167,7 @@ class GoogleEarthIntegration:
         coords = geofence.get("coordinates", [])
         if not coords:
             return ""
-        # FIX-25: correct #RRGGBB → KML AABBGGRR conversion
+        # Convert #RRGGBB to KML's AABBGGRR order
         hex_color = geofence.get("color", "#FF4444").lstrip("#")
         if len(hex_color) == 6:
             r, g, b = hex_color[0:2], hex_color[2:4], hex_color[4:6]
@@ -239,9 +239,7 @@ class GoogleEarthIntegration:
         bbox_center_y: float,  # 0.0 – 1.0
         estimated_range_m: float = 50.0,
     ) -> Tuple[float, float]:
-        """
-        FIX-27: Protect against zero fov or zero range.
-        """
+        """Protect against zero fov or zero range."""
         if camera_fov <= 0:
             camera_fov = 90.0
         if estimated_range_m <= 0:

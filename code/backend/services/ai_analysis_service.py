@@ -17,7 +17,7 @@ class AIAnalysisService:
     """Leverages Claude AI to perform intelligent threat analysis."""
 
     def __init__(self):
-        self._client = None  # FIX-9: lazy init
+        self._client = None
         self.model = settings.AI_MODEL
         self.enabled = settings.THREAT_ANALYSIS_ENABLED and bool(
             settings.ANTHROPIC_API_KEY
@@ -25,14 +25,14 @@ class AIAnalysisService:
 
     @property
     def client(self):
-        """FIX-9: Build the Anthropic client on first use, not at import time."""
+        """Build the Anthropic client on first use, not at import time."""
         if self._client is None:
             try:
                 import anthropic
 
                 self._client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
             except ImportError:
-                logger.warning("anthropic package not installed — AI analysis disabled")
+                logger.warning("anthropic package not installed - AI analysis disabled")
                 self.enabled = False
         return self._client
 
@@ -66,7 +66,6 @@ class AIAnalysisService:
                 additional_context or {},
             )
             messages = self._build_messages(prompt, snapshot_path)
-            # FIX-11: off-load blocking I/O to thread pool
             response = await asyncio.to_thread(self._call_api, messages)
             return self._parse_analysis_response(response, detection_type, confidence)
         except Exception as e:
@@ -141,7 +140,7 @@ class AIAnalysisService:
     # ── Internal helpers ─────────────────────────────────────────────────────
 
     def _call_api(self, messages: list) -> str:
-        """Blocking Anthropic API call — always run via asyncio.to_thread."""
+        """Blocking Anthropic API call - always run via asyncio.to_thread."""
         response = self.client.messages.create(
             model=self.model,
             max_tokens=1000,
@@ -175,10 +174,10 @@ class AIAnalysisService:
 
     def _get_system_prompt(self) -> str:
         return (
-            "You are QuantumFence AI — an advanced security threat assessment system "
+            "You are QuantumFence AI - an advanced security threat assessment system "
             "for critical infrastructure perimeter protection. You analyse security "
             "camera detections and provide concise, actionable threat assessments.\n\n"
-            "IMPORTANT: Respond ONLY with valid JSON — no markdown fences, "
+            "IMPORTANT: Respond ONLY with valid JSON - no markdown fences, "
             "no preamble, no trailing text."
         )
 
@@ -209,7 +208,7 @@ class AIAnalysisService:
         self, raw: str, detection_type: str, confidence: float
     ) -> Dict:
         """
-        FIX-10: Strip all markdown fence variants before JSON parsing.
+        Strip all markdown fence variants before JSON parsing.
         """
         try:
             # Strip ```json ... ``` or ``` ... ```
@@ -266,6 +265,6 @@ class AIAnalysisService:
                 "Alert facility security immediately. "
                 "Log drone trajectory and report to authorities."
             ),
-            "drone_purpose": "Unknown — treat as hostile until identified.",
+            "drone_purpose": "Unknown - treat as hostile until identified.",
             "coordinated_threat": False,
         }

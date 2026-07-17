@@ -54,7 +54,7 @@ class DroneTrack:
     @property
     def is_approaching(self) -> bool:
         """
-        FIX-28: detect growing bounding box (drone getting closer).
+        Detects a growing bounding box (drone getting closer).
         Needs ≥5 positions; compares area of first vs last in window.
         """
         if len(self.positions) < 5:
@@ -65,7 +65,7 @@ class DroneTrack:
         return areas[-1] > areas[0]
 
     def to_dict(self) -> Dict:
-        """FIX-31: Guard empty deque before accessing positions[-1]."""
+        """Guard against an empty deque before accessing positions[-1]."""
         pos_list = list(self.positions)
         return {
             "track_id": self.track_id,
@@ -157,7 +157,7 @@ class DroneDetector:
         cy: float,
         max_dist: float = 150.0,
     ) -> Optional[DroneTrack]:
-        """FIX-30: max_dist is in pixels — documented clearly."""
+        """max_dist is in pixels."""
         best = None
         best_dist = max_dist
         for track in self.active_tracks.values():
@@ -202,7 +202,7 @@ class DroneDetector:
 
     def detect_swarm(self) -> bool:
         """
-        FIX-29: Use circular variance so that drones heading ~350° and ~10°
+        Uses circular variance so that drones heading ~350° and ~10°
         are correctly identified as "similar direction" (both heading north).
         Returns True when ≥3 drones share a heading (circular var < threshold).
         """

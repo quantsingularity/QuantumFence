@@ -92,7 +92,7 @@ class TestCreateCamera:
     def test_create_triggers_detection_service(self, client, auth_headers):
         """Creating an active camera must call detection_service.start_camera."""
         # Just verify the endpoint succeeds and the camera is created.
-        # start_camera is a background task (async) — we just confirm it's scheduled.
+        # start_camera is a background task (async) - we just confirm it's scheduled.
         res = client.post(
             "/api/cameras", json={"name": "DS Test Cam"}, headers=auth_headers
         )

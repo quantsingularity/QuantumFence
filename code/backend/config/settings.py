@@ -87,10 +87,6 @@ class Settings(BaseSettings):
 settings = Settings()
 
 
-# FIX: Only create directories at runtime, NOT at import time in tests.
-# This is deferred to application startup in main.py lifespan.
-# (Previously the bare `os.makedirs` calls here crashed test collection
-#  because /tmp paths didn't match monkeypatched settings.)
 def ensure_directories() -> None:
     """Create all required runtime directories. Call from main.py lifespan."""
     for d in [

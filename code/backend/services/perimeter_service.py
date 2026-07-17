@@ -108,7 +108,7 @@ class PerimeterService:
         positions: List[Tuple[float, float]],
         fence_coordinates: List[List[float]],
     ) -> Dict:
-        """FIX-14: Guard against empty fence_coordinates."""
+        """Guard against empty fence_coordinates."""
         if len(positions) < 3:
             return {
                 "approaching": False,
@@ -184,11 +184,11 @@ class PerimeterService:
         """
         Ray-casting algorithm.
         Coordinates stored as [lng, lat] pairs (GeoJSON convention).
-        FIX-13: uses explicit index access; guards empty list.
+        Uses explicit index access and guards against an empty list.
         """
         if not coords or len(coords) < 3:
             return False
-        # GeoJSON stores [lng, lat] — we need lat/lng for the test
+        # GeoJSON stores [lng, lat] - we need lat/lng for the test
         # detection point: (lat, lng)
         x, y = lng, lat
         n = len(coords)
@@ -216,8 +216,8 @@ class PerimeterService:
 
     def _distance_to_polygon(self, lat: float, lng: float, coords: List) -> float:
         """
-        FIX-12: coords are [lng, lat] — haversine expects (lat1, lng1, lat2, lng2).
-        So vertex lat = coord[1], vertex lng = coord[0].
+        Coordinates are stored as [lng, lat], but haversine expects
+        (lat1, lng1, lat2, lng2), so vertex lat = coord[1], vertex lng = coord[0].
         """
         if not coords:
             return float("inf")

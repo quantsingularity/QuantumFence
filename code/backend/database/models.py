@@ -70,7 +70,6 @@ class UserRole(str, enum.Enum):
 
 
 # ─── Helper: SAEnum with native_enum=False for SQLite ────────────────────────
-# FIX-34: SQLite has no native ENUM; store as VARCHAR for portability.
 def _enum(e):
     return SAEnum(e, native_enum=False)
 
@@ -92,7 +91,6 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    # FIX-33: explicit back_populates relationship
     alerts_acknowledged = relationship(
         "Alert",
         back_populates="acknowledged_by_user",
@@ -106,7 +104,6 @@ class Geofence(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     description = Column(Text)
-    # FIX-32: nullable=True — route validates presence
     coordinates = Column(JSON, nullable=True, default=list)
     fence_type = Column(String(20), default="polygon", nullable=False)
     center_lat = Column(Float)
@@ -176,7 +173,6 @@ class Detection(Base):
     estimated_lng = Column(Float)
     ai_analysis = Column(Text)
     risk_score = Column(Float, default=0.0, nullable=False)
-    # FIX-35: added missing server_default
     timestamp = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -205,7 +201,6 @@ class Alert(Base):
     snapshot_path = Column(String(500))
     video_clip_path = Column(String(500))
     detection_data = Column(JSON)
-    # FIX-33: explicit FK for acknowledged_by
     acknowledged_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     acknowledged_at = Column(DateTime(timezone=True))
     resolved_at = Column(DateTime(timezone=True))
@@ -252,6 +247,5 @@ class SystemLog(Base):
     level = Column(String(10), nullable=False)
     module = Column(String(100))
     message = Column(Text, nullable=False)
-    # FIX-36: renamed from 'metadata' (reserved by SQLAlchemy's Base)
     log_metadata = Column(JSON)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())

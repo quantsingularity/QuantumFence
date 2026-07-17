@@ -386,7 +386,7 @@ function StatsModal({ camera, onClose }) {
               letterSpacing: 2,
             }}
           >
-            CAMERA STATS — {camera.name}
+            CAMERA STATS - {camera.name}
           </h3>
           <button
             onClick={onClose}
@@ -445,7 +445,7 @@ function StatsModal({ camera, onClose }) {
                 "LAST SEEN",
                 stats.last_seen
                   ? new Date(stats.last_seen).toLocaleTimeString()
-                  : "—",
+                  : "-",
               ],
               ["DETECTIONS", stats.total_detections],
               ["TOTAL ALERTS", stats.total_alerts],

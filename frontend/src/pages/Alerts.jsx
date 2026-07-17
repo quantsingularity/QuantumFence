@@ -308,7 +308,7 @@ export default function Alerts() {
                             fontFamily: "var(--font-mono)",
                           }}
                         >
-                          —
+                          -
                         </span>
                       )}
                     </td>

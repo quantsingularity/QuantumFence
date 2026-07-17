@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { cameraApi, geofenceApi, alertApi } from "../services/api";
 import { useWebSocket } from "../context/WebSocketContext";
 
@@ -7,7 +9,6 @@ export default function MapView() {
   const [geofences, setGeofences] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [mapReady, setMapReady] = useState(false);
 
   const mapRef = useRef(null);
   const leafletMap = useRef(null);
@@ -40,33 +41,10 @@ export default function MapView() {
     if (latestAlert || latestDrone) load();
   }, [latestAlert, latestDrone, load]);
 
-  // Load Leaflet from CDN
+  // Initialise the map once, on mount
   useEffect(() => {
-    if (document.getElementById("leaflet-css")) {
-      setMapReady(true);
-      return;
-    }
+    if (!mapRef.current || leafletMap.current) return;
 
-    const link = document.createElement("link");
-    link.id = "leaflet-css";
-    link.rel = "stylesheet";
-    link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-    document.head.appendChild(link);
-
-    const script = document.createElement("script");
-    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-    script.onload = () => setMapReady(true);
-    document.head.appendChild(script);
-
-    return () => {
-      // Leave them in DOM — cheaper than reloading
-    };
-  }, []);
-
-  // Initialise map once
-  useEffect(() => {
-    if (!mapReady || !mapRef.current || leafletMap.current) return;
-    const L = window.L;
     const map = L.map(mapRef.current, {
       zoomControl: true,
       attributionControl: true,
@@ -79,12 +57,24 @@ export default function MapView() {
 
     map.setView([33.6844, 73.0479], 16);
     leafletMap.current = map;
-  }, [mapReady]);
+
+    // Leaflet keeps internal size caches; if the container was hidden or
+    // resized before this ran, nudge it once so tiles render correctly.
+    setTimeout(() => map.invalidateSize(), 0);
+
+    const handleResize = () => map.invalidateSize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      map.remove();
+      leafletMap.current = null;
+    };
+  }, []);
 
   // Re-draw markers/geofences whenever data changes
   useEffect(() => {
-    if (!leafletMap.current || !window.L) return;
-    const L = window.L;
+    if (!leafletMap.current) return;
     const map = leafletMap.current;
 
     // Clear
@@ -198,7 +188,7 @@ export default function MapView() {
       );
       map.fitBounds(bounds, { padding: [60, 60], maxZoom: 17 });
     }
-  }, [cameras, geofences, alerts, mapReady]);
+  }, [cameras, geofences, alerts]);
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -253,7 +243,7 @@ export default function MapView() {
               borderBottom: "1px dashed var(--qf-cyan)",
             }}
           >
-            — GEOFENCE
+            - GEOFENCE
           </span>
         </div>
       </div>
@@ -261,33 +251,6 @@ export default function MapView() {
       {/* ── Map ─────────────────────────────────────────────────────────────── */}
       <div style={{ flex: 1, position: "relative" }}>
         <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
-
-        {!mapReady && (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "var(--qf-bg-dark)",
-              flexDirection: "column",
-              gap: 16,
-              zIndex: 10,
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "var(--font-display)",
-                color: "var(--qf-cyan)",
-                fontSize: 16,
-                letterSpacing: 3,
-              }}
-            >
-              LOADING MAP…
-            </div>
-          </div>
-        )}
 
         {/* Selected camera panel */}
         {selected && (

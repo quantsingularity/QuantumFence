@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-QuantumFence — Maintenance Script
+QuantumFence - Maintenance Script
 Performs routine maintenance: snapshot cleanup, DB vacuum, health checks.
 Run via cron: 0 2 * * * python3 scripts/maintenance/maintenance.py
 """

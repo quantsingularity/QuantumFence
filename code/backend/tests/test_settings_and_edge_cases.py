@@ -76,7 +76,7 @@ class TestSettings:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# PARAMETRIZED EDGE CASES — Perimeter Service
+# PARAMETRIZED EDGE CASES - Perimeter Service
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
@@ -140,7 +140,7 @@ class TestPerimeterEdgeCases:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# PARAMETRIZED EDGE CASES — AI Analysis
+# PARAMETRIZED EDGE CASES - AI Analysis
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
@@ -215,7 +215,7 @@ class TestAIAnalysisEdgeCases:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# PARAMETRIZED EDGE CASES — Model Manager
+# PARAMETRIZED EDGE CASES - Model Manager
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
@@ -280,7 +280,7 @@ class TestModelManagerEdgeCases:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# PARAMETRIZED EDGE CASES — Drone Tracker
+# PARAMETRIZED EDGE CASES - Drone Tracker
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
@@ -359,7 +359,7 @@ class TestDroneTrackerEdgeCases:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# PARAMETRIZED EDGE CASES — Google Earth
+# PARAMETRIZED EDGE CASES - Google Earth
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
@@ -368,6 +368,7 @@ class TestGoogleEarthEdgeCases:
     @pytest.fixture
     def geo(self):
         from config.settings import settings
+
         from integrations.google_earth import GoogleEarthIntegration
 
         settings.GOOGLE_MAPS_API_KEY = ""

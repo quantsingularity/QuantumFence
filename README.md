@@ -45,18 +45,23 @@ QuantumFence/
 ├── frontend/                 # React + Vite SPA
 │   ├── src/
 │   │   ├── pages/
+│   │   │   ├── Home.jsx          # Public marketing homepage (app entry point)
+│   │   │   ├── Login.jsx         # Sign in
+│   │   │   ├── SignUp.jsx        # Self-service account registration
 │   │   │   ├── Dashboard.jsx     # Live command center
 │   │   │   ├── Cameras.jsx       # Camera management
 │   │   │   ├── Alerts.jsx        # Alert management table
 │   │   │   ├── DroneWatch.jsx    # Drone radar & log
 │   │   │   ├── MapView.jsx       # Leaflet tactical map
+│   │   │   ├── Geofences.jsx     # Geofence zone CRUD (polygon & circle)
 │   │   │   ├── Analytics.jsx     # Charts & reporting
-│   │   │   ├── Settings.jsx      # System configuration
-│   │   │   └── Login.jsx         # Authentication
+│   │   │   ├── Settings.jsx      # System configuration + admin user management
+│   │   │   ├── Profile.jsx       # Account profile & password management
+│   │   │   └── NotFound.jsx      # 404 page
 │   │   ├── components/
-│   │   │   └── Layout.jsx        # Sidebar navigation
+│   │   │   └── Layout.jsx        # Sidebar navigation (authenticated shell)
 │   │   ├── context/
-│   │   │   ├── AuthContext.jsx   # JWT auth state
+│   │   │   ├── AuthContext.jsx   # JWT auth state (login/register/logout)
 │   │   │   └── WebSocketContext.jsx  # Real-time events
 │   │   └── services/
 │   │       └── api.js            # Axios API client
@@ -124,9 +129,13 @@ bash scripts/deployment/start.sh
 
 Access:
 
-- **Frontend**: http://localhost:3000
+- **Frontend**: http://localhost:3000 - opens on the public homepage. From
+  there, sign in with an existing account or create a new one; both lead to
+  the protected `/dashboard` and the rest of the command center.
 - **API Docs**: http://localhost:8000/api/docs
-- **Login**: `admin` / `quantumfence`
+- **Default login**: `admin` / `quantumfence` (seeded by
+  `migrate_and_seed.py`) - or register a new operator account from the
+  homepage at any time.
 
 ---
 
@@ -210,17 +219,26 @@ docker-compose up -d
 
 Full Swagger docs at: `http://localhost:8000/api/docs`
 
-| Method | Endpoint                       | Description              |
-| ------ | ------------------------------ | ------------------------ |
-| POST   | `/api/auth/login`              | Authenticate and get JWT |
-| GET    | `/api/cameras`                 | List all cameras         |
-| POST   | `/api/cameras`                 | Add new camera           |
-| GET    | `/api/alerts`                  | List alerts with filters |
-| POST   | `/api/alerts/{id}/acknowledge` | Acknowledge alert        |
-| GET    | `/api/drones`                  | Drone detection log      |
-| GET    | `/api/analytics/overview`      | System overview stats    |
-| GET    | `/api/geofences`               | List geofence zones      |
-| WS     | `/ws/{client_id}`              | Real-time event stream   |
+| Method | Endpoint                       | Description                         |
+| ------ | ------------------------------ | ----------------------------------- |
+| POST   | `/api/auth/register`           | Create a new account (self-service) |
+| POST   | `/api/auth/login`              | Authenticate and get JWT            |
+| GET    | `/api/auth/me`                 | Get the current user's profile      |
+| PUT    | `/api/auth/me`                 | Update own profile (name/email)     |
+| POST   | `/api/auth/change-password`    | Change own password                 |
+| GET    | `/api/auth/users`              | List all users (admin only)         |
+| PATCH  | `/api/auth/users/{id}`         | Update a user's role/status (admin) |
+| GET    | `/api/cameras`                 | List all cameras                    |
+| POST   | `/api/cameras`                 | Add new camera                      |
+| GET    | `/api/alerts`                  | List alerts with filters            |
+| POST   | `/api/alerts/{id}/acknowledge` | Acknowledge alert                   |
+| GET    | `/api/drones`                  | Drone detection log                 |
+| GET    | `/api/analytics/overview`      | System overview stats               |
+| GET    | `/api/geofences`               | List geofence zones                 |
+| POST   | `/api/geofences`               | Create a geofence zone              |
+| PUT    | `/api/geofences/{id}`          | Update a geofence zone              |
+| DELETE | `/api/geofences/{id}`          | Delete a geofence zone              |
+| WS     | `/ws/{client_id}`              | Real-time event stream              |
 
 ---
 
@@ -230,8 +248,8 @@ Key settings in `code/backend/.env`:
 
 | Variable                     | Description                      | Default            |
 | ---------------------------- | -------------------------------- | ------------------ |
-| `ANTHROPIC_API_KEY`          | Claude AI API key                | —                  |
-| `GOOGLE_MAPS_API_KEY`        | Maps/satellite imagery           | —                  |
+| `ANTHROPIC_API_KEY`          | Claude AI API key                | -                  |
+| `GOOGLE_MAPS_API_KEY`        | Maps/satellite imagery           | -                  |
 | `DETECTION_CONFIDENCE`       | YOLOv8 minimum confidence        | `0.5`              |
 | `AI_CONFIDENCE_THRESHOLD`    | Threshold to trigger AI analysis | `0.65`             |
 | `FRAME_SKIP`                 | Process every N-th frame         | `3`                |

@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 
 import numpy as np
 import pytest
+
 from ai_models.drone_detector import DroneDetector, DroneTrack
 
 pytestmark = pytest.mark.unit
@@ -118,7 +119,7 @@ class TestDroneTrack:
         assert len(t.positions) == 100  # maxlen=100
 
 
-# ─── DroneDetector — tracking ─────────────────────────────────────────────────
+# ─── DroneDetector - tracking ─────────────────────────────────────────────────
 
 
 class TestDroneDetectorTracking:
@@ -184,7 +185,7 @@ class TestDroneDetectorTracking:
         assert len(ids) == 2  # two distinct IDs
 
 
-# ─── DroneDetector — threat scoring ──────────────────────────────────────────
+# ─── DroneDetector - threat scoring ──────────────────────────────────────────
 
 
 class TestThreatScoring:
@@ -240,7 +241,7 @@ class TestThreatScoring:
         assert 0.0 <= score <= 1.0
 
 
-# ─── DroneDetector — swarm detection ─────────────────────────────────────────
+# ─── DroneDetector - swarm detection ─────────────────────────────────────────
 
 
 class TestSwarmDetection:
@@ -265,7 +266,7 @@ class TestSwarmDetection:
         """Three drones all moving east (direction ≈ 0°) → swarm (circular var < 0.15)."""
         for i in range(3):
             track = DroneTrack(track_id=i + 1)
-            # All moving right (east) — direction ≈ 0°
+            # All moving right (east) - direction ≈ 0°
             for j in range(3):
                 track.positions.append((100 + i * 100 + j * 20, 300 + i * 50, 25, 25))
             detector.active_tracks[i + 1] = track
@@ -291,7 +292,7 @@ class TestSwarmDetection:
         assert detector.detect_swarm() is False
 
 
-# ─── DroneDetector — helpers ──────────────────────────────────────────────────
+# ─── DroneDetector - helpers ──────────────────────────────────────────────────
 
 
 class TestDroneDetectorHelpers:

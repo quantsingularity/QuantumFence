@@ -237,7 +237,7 @@ export default function Home() {
             }}
           >
             Multi-camera perimeter security with real-time drone detection,
-            geofencing, and Claude AI threat analysis — built for security teams
+            geofencing, and Claude AI threat analysis - built for security teams
             who can't afford to miss a signal.
           </p>
 

@@ -2,7 +2,7 @@
 Tests for DetectionService (services/detection_service.py).
 Covers camera start/stop lifecycle, frame processing pipeline,
 alert + drone detection DB persistence, and snapshot saving.
-All camera I/O is mocked — no real streams or GPU needed.
+All camera I/O is mocked - no real streams or GPU needed.
 """
 
 from datetime import datetime, timezone
@@ -70,7 +70,7 @@ class TestCameraProcessor:
         assert proc.is_running is True
 
 
-# ─── DetectionService — initialisation ───────────────────────────────────────
+# ─── DetectionService - initialisation ───────────────────────────────────────
 
 
 class TestDetectionServiceInit:
@@ -104,7 +104,7 @@ class TestDetectionServiceInit:
         assert svc.model_manager is None
 
 
-# ─── DetectionService — camera lifecycle ─────────────────────────────────────
+# ─── DetectionService - camera lifecycle ─────────────────────────────────────
 
 
 class TestCameraLifecycle:
@@ -158,7 +158,7 @@ class TestCameraLifecycle:
         assert svc._processing_tasks == {}
 
 
-# ─── DetectionService — _run_detections ──────────────────────────────────────
+# ─── DetectionService - _run_detections ──────────────────────────────────────
 
 
 class TestRunDetections:
@@ -275,7 +275,7 @@ class TestRunDetections:
         svc_with_mock_ws.model_manager.detect_persons.assert_not_called()
 
 
-# ─── DetectionService — alert creation ───────────────────────────────────────
+# ─── DetectionService - alert creation ───────────────────────────────────────
 
 
 class TestAlertCreation:
@@ -298,7 +298,7 @@ class TestAlertCreation:
                 return getattr(self._real, name)
 
             def close(self):
-                pass  # no-op — let the test fixture manage teardown
+                pass  # no-op - let the test fixture manage teardown
 
             def rollback(self):
                 pass  # no-op to avoid aborting the test transaction
@@ -415,7 +415,7 @@ class TestAlertCreation:
         assert alert.severity == AlertSeverity.CRITICAL
 
 
-# ─── DetectionService — snapshot saving ─────────────────────────────────────
+# ─── DetectionService - snapshot saving ─────────────────────────────────────
 
 
 class TestSnapshotSaving:
@@ -472,7 +472,7 @@ class TestSnapshotSaving:
             assert not Path(path).exists()
 
 
-# ─── DetectionService — DB helpers ───────────────────────────────────────────
+# ─── DetectionService - DB helpers ───────────────────────────────────────────
 
 
 class TestDetectionServiceDBHelpers:

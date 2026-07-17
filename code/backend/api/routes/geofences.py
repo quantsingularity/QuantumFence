@@ -134,10 +134,7 @@ async def check_point_in_geofence(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    Check whether a (lat, lng) point is inside the geofence polygon.
-    FIX-18: lat/lng now correctly typed query params (not path params).
-    """
+    """Check whether a (lat, lng) point is inside the geofence polygon."""
     gf = db.query(Geofence).filter(Geofence.id == geofence_id).first()
     if not gf:
         raise HTTPException(404, "Geofence not found")
@@ -160,7 +157,6 @@ def _point_in_polygon(lat: float, lng: float, coords: list) -> bool:
     Ray-casting algorithm.
     coords = [[lng0,lat0], [lng1,lat1], ...]  (GeoJSON)
     test point = (lat, lng)
-    FIX-13: Correct [lng, lat] unpacking.
     """
     if not coords or len(coords) < 3:
         return False

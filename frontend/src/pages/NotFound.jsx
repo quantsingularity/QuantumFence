@@ -42,7 +42,7 @@ export default function NotFound() {
           marginBottom: 32,
         }}
       >
-        SECTOR NOT FOUND — THIS ROUTE IS OUTSIDE THE PERIMETER
+        SECTOR NOT FOUND - THIS ROUTE IS OUTSIDE THE PERIMETER
       </div>
       <Link
         to={isAuthenticated ? "/dashboard" : "/"}

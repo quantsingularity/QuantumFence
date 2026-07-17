@@ -1,5 +1,5 @@
 """
-QuantumFence — Integrations Test Configuration
+QuantumFence - Integrations Test Configuration
 Located at: code/integrations/tests/conftest.py
 
 Path resolution:

@@ -215,12 +215,12 @@ export default function DroneWatch() {
         }}
       >
         {[
-          ["TOTAL DETECTED", stats?.total_detections ?? "—", "var(--qf-cyan)"],
-          ["LAST 24H", stats?.last_24h ?? "—", "var(--qf-yellow)"],
-          ["UNAUTHORIZED", stats?.unauthorized ?? "—", "var(--qf-red)"],
+          ["TOTAL DETECTED", stats?.total_detections ?? "-", "var(--qf-cyan)"],
+          ["LAST 24H", stats?.last_24h ?? "-", "var(--qf-yellow)"],
+          ["UNAUTHORIZED", stats?.unauthorized ?? "-", "var(--qf-red)"],
           [
             "THREAT %",
-            stats ? `${stats.threat_percentage}%` : "—",
+            stats ? `${stats.threat_percentage}%` : "-",
             "var(--qf-orange)",
           ],
         ].map(([l, v, c]) => (
@@ -380,7 +380,7 @@ export default function DroneWatch() {
               borderBottom: "1px solid var(--qf-border)",
             }}
           >
-            DRONE DETECTION LOG — LAST 2H
+            DRONE DETECTION LOG - LAST 2H
           </div>
 
           {loading ? (
@@ -469,14 +469,14 @@ export default function DroneWatch() {
                       >
                         {d.estimated_altitude_m
                           ? `${d.estimated_altitude_m}m`
-                          : "—"}
+                          : "-"}
                       </td>
                       <td
                         style={{ fontFamily: "var(--font-mono)", fontSize: 11 }}
                       >
                         {d.estimated_speed_ms
                           ? `${d.estimated_speed_ms.toFixed(1)} m/s`
-                          : "—"}
+                          : "-"}
                       </td>
                       <td>
                         <span
@@ -507,7 +507,7 @@ export default function DroneWatch() {
                             {d.ai_analysis.length > 70 ? "…" : ""}
                           </div>
                         ) : (
-                          "—"
+                          "-"
                         )}
                       </td>
                     </tr>

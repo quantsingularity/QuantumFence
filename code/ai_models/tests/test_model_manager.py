@@ -9,6 +9,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import numpy as np
 import pytest
+
 from ai_models.model_manager import MockBoxes, MockYOLOModel, ModelManager
 
 pytestmark = pytest.mark.unit
@@ -231,7 +232,7 @@ class TestDetectDrones:
     def test_drone_detections_filtered_by_size_and_position(self, manager):
         """
         Detections with a relative size > 15% of the frame or in the
-        bottom 30% of the frame are NOT drones — they should be filtered out.
+        bottom 30% of the frame are NOT drones - they should be filtered out.
         """
         frame = np.zeros((1080, 1920, 3), dtype=np.uint8)
 

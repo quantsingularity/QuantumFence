@@ -30,7 +30,6 @@ async def get_overview(
     last_24h = now - timedelta(hours=24)
 
     total_cameras = db.query(Camera).count()
-    # FIX-23: compare against enum member, not raw string
     online_cameras = (
         db.query(Camera).filter(Camera.status == CameraStatus.ONLINE).count()
     )
@@ -48,7 +47,6 @@ async def get_overview(
     )
     total_dets = db.query(Detection).filter(Detection.timestamp >= last_24h).count()
 
-    # FIX-24: cap health at 100.0
     system_health = min(
         round((online_cameras / max(total_cameras, 1)) * 100, 1),
         100.0,

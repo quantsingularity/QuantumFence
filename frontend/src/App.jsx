@@ -22,7 +22,7 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { WebSocketProvider } from "./context/WebSocketContext";
 
-// Guards the authenticated app shell — bounces signed-out visitors to /login.
+// Guards the authenticated app shell - bounces signed-out visitors to /login.
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
   if (loading) return <SplashScreen />;
@@ -30,7 +30,7 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-// Keeps signed-in users off the auth forms — sends them straight to the
+// Keeps signed-in users off the auth forms - sends them straight to the
 // dashboard instead of showing Login/Sign Up again.
 function PublicOnlyRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -118,10 +118,10 @@ export default function App() {
         <Router>
           <div className="scan-overlay" />
           <Routes>
-            {/* Public marketing homepage — always the entry point */}
+            {/* Public marketing homepage - always the entry point */}
             <Route path="/" element={<Home />} />
 
-            {/* Auth forms — redirect away if already signed in */}
+            {/* Auth forms - redirect away if already signed in */}
             <Route
               path="/login"
               element={

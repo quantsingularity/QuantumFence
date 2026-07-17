@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-QuantumFence — Database Migration & Seed Script
+QuantumFence - Database Migration & Seed Script
 Run this to initialize DB, apply migrations, and seed demo data.
 """
 import os
@@ -125,7 +125,7 @@ def seed_cameras(db):
     cameras = [
         {
             "name": "North Gate Camera",
-            "description": "Primary entrance surveillance — north gate",
+            "description": "Primary entrance surveillance - north gate",
             "camera_type": CameraType.SIMULATED,
             "stream_url": "simulated",
             "latitude": 33.6852,
@@ -165,7 +165,7 @@ def seed_cameras(db):
         },
         {
             "name": "East Aerial Watch",
-            "description": "Elevated camera for drone detection — east sector",
+            "description": "Elevated camera for drone detection - east sector",
             "camera_type": CameraType.SIMULATED,
             "stream_url": "simulated",
             "latitude": 33.6844,
@@ -186,7 +186,7 @@ def seed_cameras(db):
         },
         {
             "name": "West Parking Zone",
-            "description": "Vehicle monitoring — west parking area",
+            "description": "Vehicle monitoring - west parking area",
             "camera_type": CameraType.SIMULATED,
             "stream_url": "simulated",
             "latitude": 33.6844,
@@ -220,7 +220,7 @@ def seed_cameras(db):
 
 def main():
     print("\n╔══════════════════════════════════════════════════╗")
-    print("║     QuantumFence — Database Migration & Seed     ║")
+    print("║     QuantumFence - Database Migration & Seed     ║")
     print("╚══════════════════════════════════════════════════╝\n")
 
     run_migrations()

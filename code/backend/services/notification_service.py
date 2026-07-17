@@ -13,7 +13,7 @@ from typing import List, Optional
 
 from config.settings import settings
 
-# Module-level optional imports — tests patch these as module attributes.
+# Module-level optional imports - tests patch these as module attributes.
 # Both are gracefully absent at runtime if not installed.
 try:
     import aiohttp
@@ -102,7 +102,7 @@ class NotificationService:
         recommended_action: Optional[str],
     ):
         if aiosmtplib is None:
-            logger.warning("aiosmtplib not installed — email notifications disabled")
+            logger.warning("aiosmtplib not installed - email notifications disabled")
             return
 
         try:
@@ -212,7 +212,7 @@ body{{font-family:'Segoe UI',sans-serif;background:#0a0a1a;color:#e0e0e0;margin:
             return
 
         if aiohttp is None:
-            logger.warning("aiohttp not installed — webhook notifications disabled")
+            logger.warning("aiohttp not installed - webhook notifications disabled")
             return
 
         payload = {

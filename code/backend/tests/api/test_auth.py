@@ -32,7 +32,7 @@ class TestPasswordHelpers:
         assert verify_password("wrong", hashed) is False
 
     def test_two_hashes_of_same_password_differ(self):
-        """Bcrypt includes a random salt — hashes must be unique."""
+        """Bcrypt includes a random salt - hashes must be unique."""
         h1 = hash_password("same")
         h2 = hash_password("same")
         assert h1 != h2

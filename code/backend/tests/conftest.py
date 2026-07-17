@@ -1,5 +1,5 @@
 """
-QuantumFence — Backend Test Configuration & Shared Fixtures
+QuantumFence - Backend Test Configuration & Shared Fixtures
 Located at: code/backend/tests/conftest.py
 
 Path resolution:
@@ -83,7 +83,7 @@ def test_engine():
 
 @pytest.fixture(scope="function")
 def db_session(test_engine):
-    """SAVEPOINT-based isolation — every test fully rolled back."""
+    """SAVEPOINT-based isolation - every test fully rolled back."""
     conn = test_engine.connect()
     trans = conn.begin()
     nested = conn.begin_nested()

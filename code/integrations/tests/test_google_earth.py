@@ -9,6 +9,7 @@ from datetime import datetime
 from xml.etree import ElementTree as ET
 
 import pytest
+
 from integrations.google_earth import GoogleEarthIntegration, ThreatMarker
 
 pytestmark = pytest.mark.unit

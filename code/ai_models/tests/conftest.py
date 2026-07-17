@@ -1,5 +1,5 @@
 """
-QuantumFence — AI Models Test Configuration
+QuantumFence - AI Models Test Configuration
 Located at: code/ai_models/tests/conftest.py
 
 Path resolution:

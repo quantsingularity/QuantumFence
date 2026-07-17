@@ -55,7 +55,7 @@ function StatCard({
               ...(pulse ? { animation: "flicker 2s infinite" } : {}),
             }}
           >
-            {value ?? "—"}
+            {value ?? "-"}
           </div>
           {sub && (
             <div
@@ -343,7 +343,7 @@ export default function Dashboard() {
   const threatLevel = ov?.threat_level || "CLEAR";
   const aiModels = systemHealth?.components?.ai_models || "unknown";
   const activeCams =
-    systemHealth?.components?.active_cameras ?? ov?.cameras?.online ?? "—";
+    systemHealth?.components?.active_cameras ?? ov?.cameras?.online ?? "-";
 
   return (
     <div style={{ padding: 28 }}>
@@ -413,7 +413,7 @@ export default function Dashboard() {
           icon="⚠"
           label="ACTIVE ALERTS"
           color="var(--qf-orange)"
-          value={ov?.alerts_24h ?? "—"}
+          value={ov?.alerts_24h ?? "-"}
           sub="Last 24 hours"
           pulse={ov?.critical_alerts_24h > 0}
         />
@@ -421,14 +421,14 @@ export default function Dashboard() {
           icon="◈"
           label="DRONE DETECTIONS"
           color="var(--qf-yellow)"
-          value={ov?.drone_detections_24h ?? "—"}
+          value={ov?.drone_detections_24h ?? "-"}
           sub="Last 24 hours"
         />
         <StatCard
           icon="◎"
           label="TOTAL DETECTIONS"
           color="var(--qf-cyan)"
-          value={ov?.detections_24h ?? "—"}
+          value={ov?.detections_24h ?? "-"}
           sub="Last 24 hours"
         />
       </div>

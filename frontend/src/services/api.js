@@ -36,7 +36,7 @@ export const cameraApi = {
   enable: (id) => api.post(`/cameras/${id}/enable`),
   disable: (id) => api.post(`/cameras/${id}/disable`),
   stats: (id) => api.get(`/cameras/${id}/stats`),
-  // Returns image blob — call via fetch with auth header (see Cameras.jsx StatsModal)
+  // Returns image blob - call via fetch with auth header (see Cameras.jsx StatsModal)
   snapshotUrl: (id) => `${api.defaults.baseURL}/cameras/${id}/snapshot`,
 };
 

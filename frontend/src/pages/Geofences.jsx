@@ -216,7 +216,7 @@ function GeofenceModal({ geofence, onClose, onSave }) {
                     marginTop: 4,
                   }}
                 >
-                  Type can't change after creation — delete and recreate
+                  Type can't change after creation - delete and recreate
                   instead.
                 </div>
               )}
@@ -667,7 +667,7 @@ export default function Geofences() {
           <div style={{ fontSize: 32, marginBottom: 10 }}>⊕</div>
           <div style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>
             {zones.length === 0
-              ? "No geofence zones yet — create one to start monitoring boundaries."
+              ? "No geofence zones yet - create one to start monitoring boundaries."
               : "No zones match your search."}
           </div>
         </div>

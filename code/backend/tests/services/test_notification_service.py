@@ -1,7 +1,7 @@
 """
 Tests for NotificationService (services/notification_service.py).
 Covers webhook registration, severity filtering, payload construction,
-and error handling — all without real network calls.
+and error handling - all without real network calls.
 """
 
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -291,7 +291,7 @@ class TestEmailHTMLTemplate:
         import base64
 
         raw_body = html_content.get("body", "")
-        # email.mime may return base64-encoded payload — decode if needed
+        # email.mime may return base64-encoded payload - decode if needed
         try:
             body = base64.b64decode(raw_body).decode("utf-8")
         except Exception:

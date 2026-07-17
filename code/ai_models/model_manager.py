@@ -50,7 +50,7 @@ class ModelManager:
                 self.yolo_model = YOLO(model_path)
             logger.info(f"YOLOv8 model loaded from {model_path}")
         except ImportError:
-            logger.warning("ultralytics not installed — running in mock detection mode")
+            logger.warning("ultralytics not installed - running in mock detection mode")
             self.yolo_model = MockYOLOModel()
         except Exception as e:
             logger.error(f"Failed to load YOLO model: {e}")
@@ -65,7 +65,7 @@ class ModelManager:
                 self.drone_model = YOLO(drone_path)
                 logger.info("Drone detection model loaded")
             else:
-                logger.info("No custom drone model — using YOLOv8 for drone detection")
+                logger.info("No custom drone model - using YOLOv8 for drone detection")
                 self.drone_model = self.yolo_model
         except Exception as e:
             logger.error(f"Drone model load error: {e}")
@@ -141,8 +141,8 @@ class ModelManager:
 
     def _parse_yolo_results(self, results, default_class: str) -> List[Dict[str, Any]]:
         """
-        FIX-6: Safely extract values from both real YOLOv8 tensors and
-        MockBoxes numpy arrays. Uses _safe_float / _safe_int helpers.
+        Safely extract values from both real YOLOv8 tensors and
+        MockBoxes numpy arrays, using the _safe_float / _safe_int helpers.
         """
         detections = []
         try:
@@ -219,10 +219,8 @@ class ModelManager:
     # ── Drone classification helpers ─────────────────────────────────────────
 
     def _classify_drone_type(self, w: float, h: float, relative_size: float) -> str:
-        """
-        FIX-8: micro_drone check moved BEFORE aspect-ratio branches so it
-        can actually be reached.
-        """
+        """The micro_drone check runs before the aspect-ratio branches so it can
+        actually be reached."""
         if relative_size < 0.001:
             return "micro_drone"
         aspect_ratio = w / max(h, 1)
@@ -253,8 +251,8 @@ class ModelManager:
 
 class MockYOLOModel:
     """
-    Mock YOLO model — generates occasional detections to simulate activity.
-    FIX-7: detection_type=None now returns MockEmptyResult, not MockResult(None).
+    Mock YOLO model - generates occasional detections to simulate activity.
+    detection_type=None returns MockEmptyResult, not MockResult(None).
     """
 
     def __init__(self, detection_type: Optional[str] = None):
@@ -281,8 +279,8 @@ class MockResult:
 
 class MockBoxes:
     """
-    FIX-6: Stores plain numpy scalars/arrays matching the interface
-    that _parse_yolo_results expects via _safe_float / _safe_int / _safe_xyxy.
+    Stores plain numpy scalars/arrays matching the interface that
+    _parse_yolo_results expects via _safe_float / _safe_int / _safe_xyxy.
     """
 
     def __init__(self, frame_shape, detection_type: str):

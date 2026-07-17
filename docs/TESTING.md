@@ -1,4 +1,4 @@
-# QuantumFence — Testing Guide
+# QuantumFence - Testing Guide
 
 ## Overview
 
@@ -40,7 +40,7 @@ code/tests/
 ### Prerequisites
 
 ```bash
-# From the project root — setup must have been run first
+# From the project root - setup must have been run first
 bash scripts/setup/setup.sh --dev
 ```
 
@@ -93,7 +93,7 @@ pytest code/tests/ -s
 
 ### Database Isolation
 
-Each test function gets a **rolled-back transaction**. The `db_session` fixture opens a connection, begins a transaction, and rolls it back at test teardown — so no test pollutes another.
+Each test function gets a **rolled-back transaction**. The `db_session` fixture opens a connection, begins a transaction, and rolls it back at test teardown - so no test pollutes another.
 
 ```python
 @pytest.fixture(scope="function")
@@ -123,7 +123,7 @@ def client(db_session):
 
 ### Model Factories
 
-All fixtures follow the factory pattern — call them with optional overrides:
+All fixtures follow the factory pattern - call them with optional overrides:
 
 ```python
 def test_alert_creation(client, auth_headers, make_camera, make_alert):
@@ -148,7 +148,7 @@ def manager():
 
 ### External Service Mocking
 
-- **Anthropic API**: mocked via `unittest.mock.patch` — no real Claude calls
+- **Anthropic API**: mocked via `unittest.mock.patch` - no real Claude calls
 - **Email (aiosmtplib)**: patched in `test_notification_service.py`
 - **Webhook HTTP calls**: `aiohttp.ClientSession` mocked
 - **WebSocket**: `MagicMock` objects with `AsyncMock` for async methods
@@ -171,7 +171,7 @@ def manager():
 
 | Marker                     | Description                           |
 | -------------------------- | ------------------------------------- |
-| `@pytest.mark.unit`        | Pure unit test — no DB, no network    |
+| `@pytest.mark.unit`        | Pure unit test - no DB, no network    |
 | `@pytest.mark.api`         | Uses `TestClient` for HTTP requests   |
 | `@pytest.mark.integration` | Uses real SQLite in-memory DB         |
 | `@pytest.mark.slow`        | Takes more than 1 second              |
@@ -241,13 +241,13 @@ class TestMyService:
 
 Tests run automatically on every push via GitHub Actions (`.github/workflows/ci.yml`):
 
-1. **Unit tests** — fastest, run first
-2. **API tests** — FastAPI TestClient
-3. **Integration tests** — SQLite in-memory
-4. **Coverage report** — must be ≥ 80% or CI fails
-5. **Frontend lint + build** — parallel job
-6. **Docker build + health check** — validates containerisation
-7. **Security scan** — bandit + safety
+1. **Unit tests** - fastest, run first
+2. **API tests** - FastAPI TestClient
+3. **Integration tests** - SQLite in-memory
+4. **Coverage report** - must be ≥ 80% or CI fails
+5. **Frontend lint + build** - parallel job
+6. **Docker build + health check** - validates containerisation
+7. **Security scan** - bandit + safety
 
 ---
 

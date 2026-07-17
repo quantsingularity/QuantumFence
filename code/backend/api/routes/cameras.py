@@ -198,7 +198,7 @@ async def delete_camera(
     if not cam:
         raise HTTPException(404, "Camera not found")
 
-    # FIX-16: stop_camera is async — schedule it as a background task
+    # stop_camera is async, so schedule it as a background task
     ds = _get_detection_service(request)
     if ds:
         background_tasks.add_task(ds.stop_camera, camera_id)
@@ -219,7 +219,6 @@ async def enable_camera(
     if not cam:
         raise HTTPException(404, "Camera not found")
 
-    # FIX-17: update DB status immediately (not just via background task)
     cam.is_active = True
     cam.status = CameraStatus.INITIALIZING
     db.commit()
@@ -253,7 +252,6 @@ async def disable_camera(
     if not cam:
         raise HTTPException(404, "Camera not found")
 
-    # FIX-17: update DB status immediately
     cam.is_active = False
     cam.status = CameraStatus.DISABLED
     db.commit()

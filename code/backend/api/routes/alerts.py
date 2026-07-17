@@ -56,7 +56,7 @@ class AlertStats(BaseModel):
     by_type: dict
 
 
-# FIX-21: /stats MUST be declared before /{alert_id}
+# /stats must be declared before /{alert_id}
 @router.get("/stats", response_model=AlertStats)
 async def get_alert_stats(
     db: Session = Depends(get_db),

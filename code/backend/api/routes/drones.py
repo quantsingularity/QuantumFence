@@ -57,7 +57,6 @@ async def get_active_drones(
     """Drones detected in the last 5 minutes."""
     since = datetime.now(timezone.utc) - timedelta(minutes=5)
     drones = db.query(DroneDetection).filter(DroneDetection.timestamp >= since).all()
-    # FIX-20: use model_validate for serialization
     return {
         "active_drones": len(drones),
         "detections": [

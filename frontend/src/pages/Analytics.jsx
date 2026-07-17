@@ -230,17 +230,17 @@ export default function Analytics() {
         }}
       >
         {[
-          ["CAMERAS", overview?.cameras?.total ?? "—", "var(--qf-cyan)"],
-          ["ONLINE", overview?.cameras?.online ?? "—", "var(--qf-green)"],
-          ["24H ALERTS", overview?.alerts_24h ?? "—", "var(--qf-orange)"],
+          ["CAMERAS", overview?.cameras?.total ?? "-", "var(--qf-cyan)"],
+          ["ONLINE", overview?.cameras?.online ?? "-", "var(--qf-green)"],
+          ["24H ALERTS", overview?.alerts_24h ?? "-", "var(--qf-orange)"],
           [
             "DRONE HITS",
-            overview?.drone_detections_24h ?? "—",
+            overview?.drone_detections_24h ?? "-",
             "var(--qf-yellow)",
           ],
           [
             "SYSTEM HEALTH",
-            overview ? `${overview.system_health}%` : "—",
+            overview ? `${overview.system_health}%` : "-",
             "var(--qf-green)",
           ],
         ].map(([l, v, c]) => (
@@ -301,7 +301,7 @@ export default function Analytics() {
               keyField="date"
               valueField="detections"
               color="var(--qf-cyan)"
-              label={`DETECTION ACTIVITY — LAST ${days} DAYS`}
+              label={`DETECTION ACTIVITY - LAST ${days} DAYS`}
             />
           )}
         </div>
@@ -324,7 +324,7 @@ export default function Analytics() {
               keyField="type"
               valueField="count"
               color="var(--qf-orange)"
-              label={`ALERTS BY DETECTION TYPE — LAST ${days} DAYS`}
+              label={`ALERTS BY DETECTION TYPE - LAST ${days} DAYS`}
             />
           )}
         </div>

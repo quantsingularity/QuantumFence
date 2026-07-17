@@ -69,7 +69,6 @@ async def lifespan(app: FastAPI):
 
     logger.info("🚀 Starting QuantumFence...")
 
-    # FIX-11: Create directories here, not at settings import time
     ensure_directories()
 
     # Ensure DB schema

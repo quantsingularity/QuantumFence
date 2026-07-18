@@ -1,6 +1,6 @@
 ## CI/CD Pipeline
 
-AlphaMind uses GitHub Actions for continuous integration and deployment:
+QuantumFence uses GitHub Actions for continuous integration and deployment:
 
 | Stage                | Control Area                    | Institutional-Grade Detail                                                              |
 | :------------------- | :------------------------------ | :-------------------------------------------------------------------------------------- |

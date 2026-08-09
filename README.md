@@ -8,6 +8,10 @@
 
 > **AI-powered multi-camera perimeter security with real-time drone detection, geofencing, and Claude AI threat analysis.**
 
+<div align="center">
+  <img src="docs/images/homepage.bmp" alt="QuantumFence HomePage" width="80%">
+</div>
+
 ---
 
 ## Tech Stack

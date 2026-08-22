@@ -10,27 +10,27 @@ The test suite covers **backend API routes**, **AI models**, **services**, **int
 
 ```
 code/tests/
-├── conftest.py                          # Shared fixtures for all tests
+├── conftest.py                             # Shared fixtures for all tests
 ├── backend/
 │   ├── api/
-│   │   ├── test_auth.py                 # JWT auth, login, registration, token refresh
-│   │   ├── test_cameras.py              # Camera CRUD, enable/disable, snapshot, stats
-│   │   ├── test_routes.py               # Alerts, Drones, Analytics, Geofences routes
-│   │   ├── test_websocket.py            # WebSocket connection manager
-│   │   └── test_system.py              # Health/root, CORS, e2e workflows, RBAC
+│   │   ├── test_auth.py                    # JWT auth, login, registration, token refresh
+│   │   ├── test_cameras.py                 # Camera CRUD, enable/disable, snapshot, stats
+│   │   ├── test_routes.py                  # Alerts, Drones, Analytics, Geofences routes
+│   │   ├── test_websocket.py               # WebSocket connection manager
+│   │   └── test_system.py                  # Health/root, CORS, e2e workflows, RBAC
 │   ├── database/
-│   │   └── test_models.py               # ORM model validation, constraints, enums
+│   │   └── test_models.py                  # ORM model validation, constraints, enums
 │   ├── services/
-│   │   ├── test_perimeter_service.py    # Polygon/circle containment, loitering, approach
-│   │   ├── test_ai_analysis_service.py  # Claude API mocking, parsing, fallbacks
-│   │   ├── test_detection_service.py    # Camera lifecycle, DB writes, alert creation
-│   │   └── test_notification_service.py # Email/webhook dispatch, severity filtering
-│   └── test_settings_and_edge_cases.py  # Config validation, parametrized edge cases
+│   │   ├── test_perimeter_service.py       # Polygon/circle containment, loitering, approach
+│   │   ├── test_ai_analysis_service.py     # Claude API mocking, parsing, fallbacks
+│   │   ├── test_detection_service.py       # Camera lifecycle, DB writes, alert creation
+│   │   └── test_notification_service.py    # Email/webhook dispatch, severity filtering
+│   └── test_settings_and_edge_cases.py     # Config validation, parametrized edge cases
 ├── ai_models/
-│   ├── test_drone_detector.py           # DroneTrack, multi-object tracking, swarm
-│   └── test_model_manager.py            # YOLOv8 pipeline, bbox parsing, drone filter
+│   ├── test_drone_detector.py              # DroneTrack, multi-object tracking, swarm
+│   └── test_model_manager.py               # YOLOv8 pipeline, bbox parsing, drone filter
 └── integrations/
-    └── test_google_earth.py             # KML generation, FOV polygon, location estimate
+    └── test_google_earth.py                # KML generation, FOV polygon, location estimate
 ```
 
 ---

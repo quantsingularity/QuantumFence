@@ -35,23 +35,23 @@ QuantumFence demonstrates a perimeter-security workflow across a real, runnable 
 ```
 QuantumFence/
 ├── code/
-│   ├── backend/                # FastAPI application
-│   │   ├── api/routes/         # auth, cameras, alerts, drones, geofences, analytics
-│   │   ├── api/websocket.py    # Real-time event hub (alerts, detections, camera status)
-│   │   ├── services/           # detection_service (OpenCV/YOLOv8), ai_analysis_service
-│   │   │                       # (Claude API), and others
-│   │   ├── database/           # SQLAlchemy models, including user roles
-│   │   └── tests/               # Backend test suite (not currently run in CI)
+│   ├── backend/                  # FastAPI application
+│   │   ├── api/routes/           # auth, cameras, alerts, drones, geofences, analytics
+│   │   ├── api/websocket.py      # Real-time event hub (alerts, detections, camera status)
+│   │   ├── services/             # detection_service (OpenCV/YOLOv8), ai_analysis_service
+│   │   │                         # (Claude API), and others
+│   │   ├── database/             # SQLAlchemy models, including user roles
+│   │   └── tests/                # Backend test suite (not currently run in CI)
 │   ├── ai_models/                # drone_detector, model_manager (YOLOv8 via
 │   │   │                         # Ultralytics/PyTorch, with an honest
 │   │   │                         # MockYOLOModel fallback if those packages
 │   │   │                         # aren't installed)
-│   │   └── tests/                 # ai_models test suite
-│   └── integrations/               # Google Maps / Google Earth KML export
-├── frontend/                        # React (Vite) web dashboard
-├── infrastructure/                    # Docker, Kubernetes, Terraform, Nginx configs
-├── scripts/                            # Setup, seeding, deployment, and maintenance scripts
-├── docs/                                # Documentation (this directory)
+│   │   └── tests/                # ai_models test suite
+│   └── integrations/             # Google Maps / Google Earth KML export
+├── frontend/                     # React (Vite) web dashboard
+├── infrastructure/               # Docker, Kubernetes, Terraform, Nginx configs
+├── scripts/                      # Setup, seeding, deployment, and maintenance scripts
+├── docs/                         # Documentation (this directory)
 └── README.md
 ```
 
